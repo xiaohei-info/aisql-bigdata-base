@@ -2,6 +2,7 @@ package com.xinyan.bigdata.base.gojira
 
 import com.xinyan.bigdata.base.gojira.actor.sparkimpl.{SparkDaor, SparkServicr}
 import com.xinyan.bigdata.base.gojira.actor.{Ancestor, Beanr}
+import com.xinyan.bigdata.base.java.ZipCompress
 import com.xinyan.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
 
@@ -71,6 +72,9 @@ class Gojira(savePath: String, projectName: String,
               s"$projectPath/${actor.actorType.toLowerCase()}/$baseClass${actor.actorType}.scala")
         }
     }
+    val zip = new ZipCompress(s"$savePath/$projectName.zip", s"$savePath/$projectName")
+    zip.zip()
+    FileUtil.deleteFiles(s"$savePath/$projectName")
   }
 
   private def printSchema(actorType: String): Unit = {
