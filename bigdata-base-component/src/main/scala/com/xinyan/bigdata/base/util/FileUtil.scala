@@ -109,16 +109,17 @@ object FileUtil {
   /**
     * 删除文件或文件夹，慎用
     *
-    * @param file 文件
+    * @param path 文件路径
     * @return
     */
-  def deleteFiles(file: File): Boolean = {
+  def deleteFiles(path: String): Boolean = {
+    val file = new File(path)
     if (!file.exists()) false
     else {
       if (file.isFile) file.delete()
       else {
         for (f <- file.listFiles()) {
-          deleteFiles(f)
+          deleteFiles(f.getPath)
         }
         file.delete()
       }
