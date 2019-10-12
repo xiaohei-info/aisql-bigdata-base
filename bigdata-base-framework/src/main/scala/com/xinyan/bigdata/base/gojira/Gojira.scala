@@ -66,7 +66,9 @@ class Gojira(savePath: String, projectName: String,
             actor.baseClass = baseClass
             actor.fieldMeta = fieldMeta
             actor.init()
-            FileUtil.saveFile(Seq[String](actor.toString), beanPath + s"/$baseClass${actor.actorType}.scala")
+
+            FileUtil.saveFile(Seq[String](actor.toString),
+              s"$projectPath/${actor.actorType.toLowerCase()}/$baseClass${actor.actorType}.scala")
         }
     }
   }
@@ -88,7 +90,7 @@ class Gojira(savePath: String, projectName: String,
 
   private def preMkdir: Boolean = {
     if (!FileUtil.isExists(savePath)) {
-      println("path does exists!")
+      println("path doesn't exists!")
       return false
     }
 

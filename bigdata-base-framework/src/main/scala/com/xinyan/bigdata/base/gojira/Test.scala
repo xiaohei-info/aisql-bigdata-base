@@ -79,6 +79,6 @@ object Test {
       Seq[String](tableName),
       Seq((tableName, baseClass, fieldMeta)))
 
-    gojira.print()
+    gojira.save()
   }
 }
