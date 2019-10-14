@@ -2,6 +2,8 @@ package com.xinyan.bigdata.base.gojira
 
 import com.xinyan.bigdata.base.gojira.actor.sparkimpl.{SparkDaor, SparkServicr}
 import com.xinyan.bigdata.base.gojira.actor.{Ancestor, Beanr}
+import com.xinyan.bigdata.base.gojira.enum.{ActorType, EngineType}
+import com.xinyan.bigdata.base.gojira.enum.EngineType.EngineType
 import com.xinyan.bigdata.base.java.ZipCompress
 import com.xinyan.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
@@ -12,16 +14,23 @@ import org.apache.spark.sql.SparkSession
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-class Gojira(savePath: String, projectName: String,
-             projectPkgName: String, whoami: String, tableNames: Seq[String],
+class Gojira(savePath: String,
+             projectName: String,
+             projectPkgName: String,
+             whoami: String,
+             tableNames: Seq[String],
+             engineType: EngineType = EngineType.ALL,
              tableSchema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty,
              sparkOpt: Option[SparkSession] = None) {
 
-  private val actors: Seq[Ancestor] = Seq[Ancestor](
+  private val allActors: Seq[Ancestor] = Seq[Ancestor](
     new Beanr(projectPkgName, whoami),
     new SparkDaor(projectPkgName, whoami),
     new SparkServicr(projectPkgName, whoami)
   )
+
+  private val actors = if (engineType == EngineType.ALL) allActors
+  else allActors.filter(a => a.actorType == ActorType.BEAN || a.actorType.toString.contains(engineType.toString))
 
   private val schema: Seq[(String, String, Seq[(String, String, String)])] = {
     //是否有测试的自定义schema
@@ -39,9 +48,6 @@ class Gojira(savePath: String, projectName: String,
   }
 
   private val projectPath = savePath + "/" + projectName
-  private val beanPath = projectPath + "/bean"
-  private val daoPath = projectPath + "/dao"
-  private val servicePath = projectPath + "/service"
 
   def printBean(): Unit = {
     printSchema("Bean")
@@ -60,7 +66,7 @@ class Gojira(savePath: String, projectName: String,
   }
 
   def save(): Unit = {
-    if (!preMkdir) return
+    if (!checkDir) return
     schema.foreach {
       case (tableName, baseClass, fieldMeta) =>
         actors.foreach {
@@ -70,8 +76,9 @@ class Gojira(savePath: String, projectName: String,
             actor.fieldMeta = fieldMeta
             actor.init()
 
-            FileUtil.saveFile(Seq[String](actor.toString),
-              s"$projectPath/${actor.actorType.toLowerCase()}/$baseClass${actor.actorType}.scala")
+            val dirName = actor.actorType.toString.toLowerCase()
+            val fileName = s"$baseClass${actor.actorType}.scala"
+            FileUtil.saveFile(Seq[String](actor.toString), s"$projectPath/$dirName/$fileName")
         }
     }
     val zip = new ZipCompress(s"$savePath/$projectName.zip", s"$savePath/$projectName")
@@ -94,15 +101,11 @@ class Gojira(savePath: String, projectName: String,
     }
   }
 
-  private def preMkdir: Boolean = {
+  private def checkDir: Boolean = {
     if (!FileUtil.isExists(savePath)) {
       println("path doesn't exists!")
       return false
     }
-
-    FileUtil.mkdir(beanPath)
-    FileUtil.mkdir(daoPath)
-    FileUtil.mkdir(servicePath)
     true
   }
 

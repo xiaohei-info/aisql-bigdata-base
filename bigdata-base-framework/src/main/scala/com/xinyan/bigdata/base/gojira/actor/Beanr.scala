@@ -1,5 +1,7 @@
 package com.xinyan.bigdata.base.gojira.actor
 
+import com.xinyan.bigdata.base.gojira.enum.ActorType
+import com.xinyan.bigdata.base.gojira.enum.ActorType._
 import com.xinyan.bigdata.base.gojira.model.ClassModel
 import com.xinyan.bigdata.base.util.DateUtil
 
@@ -11,7 +13,7 @@ import com.xinyan.bigdata.base.util.DateUtil
   */
 class Beanr(basePackage: String, whoami: String) extends Ancestor {
 
-  override val actorType: String = "Bean"
+  override val actorType: ActorType = ActorType.BEAN
 
   override protected var pkgName = s"package $basePackage.dal.bean"
 

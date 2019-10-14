@@ -1,5 +1,6 @@
 package com.xinyan.bigdata.base.gojira.actor
 
+import com.xinyan.bigdata.base.gojira.enum.ActorType.ActorType
 import com.xinyan.bigdata.base.gojira.model.ClassModel
 
 /**
@@ -19,7 +20,7 @@ trait Ancestor extends Serializable {
   /**
     * 生产器类型,Bean、Dao、Serivce等
     **/
-  val actorType: String
+  val actorType: ActorType
 
   //外部传入的属性,引用时注意必须在设置之后使用
 

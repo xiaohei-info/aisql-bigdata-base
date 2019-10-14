@@ -2,6 +2,8 @@ package com.xinyan.bigdata.base.gojira.actor.sparkimpl
 
 import com.xinyan.bigdata.base.constants.TypeMap
 import com.xinyan.bigdata.base.gojira.actor.Ancestor
+import com.xinyan.bigdata.base.gojira.enum.ActorType
+import com.xinyan.bigdata.base.gojira.enum.ActorType._
 import com.xinyan.bigdata.base.gojira.model.ClassModel
 import com.xinyan.bigdata.base.util.{DateUtil, StringUtil}
 
@@ -15,7 +17,7 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
 
   private val bottomPkgName = "sparkimpl"
 
-  override val actorType: String = "Dao"
+  override val actorType: ActorType = ActorType.SPARK_DAO
 
   override protected var pkgName: String = s"package $basePackage.dal.dao.$bottomPkgName"
 

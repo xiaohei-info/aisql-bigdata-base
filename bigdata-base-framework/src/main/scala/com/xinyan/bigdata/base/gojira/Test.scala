@@ -1,7 +1,7 @@
 package com.xinyan.bigdata.base.gojira
 
+import com.xinyan.bigdata.base.gojira.enum.EngineType
 import com.xinyan.bigdata.base.util.StringUtil
-import org.apache.spark.sql.SparkSession
 
 /**
   * Author: xiaohei
@@ -77,6 +77,7 @@ object Test {
       "com.xinyan.bigdata.gojiratest",
       whoami,
       Seq[String](tableName),
+      EngineType.SPARK,
       Seq((tableName, baseClass, fieldMeta)))
 
     gojira.save()
