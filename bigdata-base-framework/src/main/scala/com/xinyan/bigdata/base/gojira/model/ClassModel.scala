@@ -11,7 +11,7 @@ import scala.collection.mutable.ArrayBuffer
 class ClassModel(private val pkgStr: String,
                  private val clsStr: String
                 ) extends Serializable {
-  private val clsResultBuffer = ArrayBuffer[String]()
+  private val classResultBuffer = ArrayBuffer[String]()
 
   private val CLASS_OPEN: String = "{"
   private val CLASS_CLOSE: String = "}"
@@ -19,8 +19,8 @@ class ClassModel(private val pkgStr: String,
   private var impStr: String = ""
   private var authorStr: String = ""
 
-  private val fieldsStr: StringBuilder = new StringBuilder
-  private val methodsStr: StringBuilder = new StringBuilder
+  private val fieldsBuffer: StringBuilder = new StringBuilder
+  private val methodsBuffer: StringBuilder = new StringBuilder
 
   def setImport(imp: String) = {
     impStr = imp
@@ -31,25 +31,26 @@ class ClassModel(private val pkgStr: String,
   }
 
   def setFields(fields: String) = {
-    fieldsStr.append(fields)
+    fieldsBuffer.append(fields)
   }
 
   def setMethods(methods: String) = {
-    methodsStr.append(methods)
+    methodsBuffer.append(methods)
   }
 
   override def toString: String = {
-    clsResultBuffer.append(pkgStr)
-    clsResultBuffer.append("\n")
-    clsResultBuffer.append(impStr)
-    clsResultBuffer.append(authorStr)
+    classResultBuffer.clear()
+    classResultBuffer.append(pkgStr)
+    classResultBuffer.append("\n")
+    classResultBuffer.append(impStr)
+    classResultBuffer.append(authorStr)
     //与className在同一行,保持 class{ 的风格
-    clsResultBuffer.append(s"$clsStr $CLASS_OPEN")
-    clsResultBuffer.append("\n")
-    clsResultBuffer.append(fieldsStr.toString())
-    clsResultBuffer.append(methodsStr.toString())
-    clsResultBuffer.append("\n")
-    clsResultBuffer.append(CLASS_CLOSE)
-    clsResultBuffer.mkString("")
+    classResultBuffer.append(s"$clsStr $CLASS_OPEN")
+    classResultBuffer.append("\n")
+    classResultBuffer.append(fieldsBuffer.toString())
+    classResultBuffer.append(methodsBuffer.toString())
+    classResultBuffer.append("\n")
+    classResultBuffer.append(CLASS_CLOSE)
+    classResultBuffer.mkString("")
   }
 }

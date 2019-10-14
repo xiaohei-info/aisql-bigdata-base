@@ -36,11 +36,11 @@ class Gojira(savePath: String,
 
   def setTable(tableNames: Seq[String], spark: SparkSession) = {
     schema = tableNames.map {
-        tableName =>
-          val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
-          val fieldMeta: Seq[(String, String, String)] = HiveUtil.getScheme(spark, tableName)
-          (tableName, baseClass, fieldMeta)
-      }
+      tableName =>
+        val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
+        val fieldMeta: Seq[(String, String, String)] = HiveUtil.getScheme(spark, tableName)
+        (tableName, baseClass, fieldMeta)
+    }
   }
 
   def setSchema(tableSchema: Seq[(String, String, Seq[(String, String, String)])]) = {
@@ -76,17 +76,18 @@ class Gojira(savePath: String,
             actor.fieldMeta = fieldMeta
             actor.init()
 
-            val dirName = actor.actorType.toString.toLowerCase()
+            //获取项目名到文件名之间的路径名称
+            val dirName = actor.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
             val fileName = s"$baseClass${actor.actorType}.scala"
             FileUtil.saveFile(Seq[String](actor.toString), s"$projectPath/$dirName/$fileName")
         }
     }
 
-    if(FileUtil.isExists(s"$savePath/$projectName")){
+    if (FileUtil.isExists(s"$savePath/$projectName")) {
       val zip = new ZipCompress(s"$savePath/$projectName.zip", s"$savePath/$projectName")
       zip.zip()
       FileUtil.deleteFiles(s"$savePath/$projectName")
-    }else{
+    } else {
       println(s"$savePath/$projectName donen't exists, please set table or schema for gojira.")
     }
   }

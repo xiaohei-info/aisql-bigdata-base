@@ -1,7 +1,6 @@
 package com.xinyan.bigdata.base.gojira
 
 import com.xinyan.bigdata.base.gojira.enum.EngineType
-import com.xinyan.bigdata.base.util.StringUtil
 
 /**
   * Author: xiaohei
@@ -67,14 +66,14 @@ object Test {
       ("pk_month", "String", ""),
       ("pk_day", "String", "")
     )
-    val tableName = "xy_ods.fi_gw_agrt_express_order_encrypt"
-    val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
+    val tableName = "xy_jiangyuande.fi_gw_agrt_express_order_encrypt_test"
+    val baseClass: String = "FiGwAgrtExpressOrderEncryptTest"
     val whoami = "xiaohei"
 
     val gojira = new Gojira(
       "/Users/xiaohei/Downloads/tmp/test",
       "gojira-test",
-      "com.xinyan.bigdata.gojiratest",
+      "com.xinyan.bigdata.base.gojira.test",
       whoami
     )
 
