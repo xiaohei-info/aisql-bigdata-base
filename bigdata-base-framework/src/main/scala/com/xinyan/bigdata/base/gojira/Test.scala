@@ -1,6 +1,8 @@
 package com.xinyan.bigdata.base.gojira
 
 import com.xinyan.bigdata.base.gojira.enum.EngineType
+import com.xinyan.bigdata.base.gojira.test.dal.bean.FiGwAgrtExpressOrderEncryptTestBean
+import com.xinyan.bigdata.base.gojira.test.service.sparkimpl.FiGwAgrtExpressOrderEncryptTestSparkService
 
 /**
   * Author: xiaohei
@@ -80,6 +82,9 @@ object Test {
     gojira.setActor(EngineType.SPARK)
     gojira.setSchema(Seq((tableName, baseClass, fieldMeta)))
 
-    gojira.save()
+//    gojira.save()
+
+    val structs = DataFrameReflectUtil.getStructType(classOf[FiGwAgrtExpressOrderEncryptTestBean]).get
+    structs.foreach(println)
   }
 }
