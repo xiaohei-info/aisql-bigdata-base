@@ -9,10 +9,10 @@ package com.xinyan.bigdata.base.constants
 object TypeMap {
 
   val hive2JavaType = Map[String, String](
-    "tinyint" -> "Byte",
+    "tinyint" -> "java.lang.Byte",
     "smallint" -> "Short",
     "int" -> "Int",
-    "bigint" -> "Long",
+    "bigint" -> "java.lang.Long",
     "float" -> "Float",
     "double" -> "Double",
     "decimal" -> "java.math.BigDecimal",
@@ -30,9 +30,11 @@ object TypeMap {
 
   val java2SparkdfType = Map[String, String](
     "Byte" -> "ByteType",
+    "java.lang.Byte" -> "ByteType",
     "Short" -> "ShortType",
     "Int" -> "IntegerType",
     "Long" -> "LongType",
+    "java.lang.Long" -> "LongType",
     "Float" -> "FloatType",
     "Double" -> "DoubleType",
     "java.math.BigDecimal" -> "DataTypes.createDecimalType()",

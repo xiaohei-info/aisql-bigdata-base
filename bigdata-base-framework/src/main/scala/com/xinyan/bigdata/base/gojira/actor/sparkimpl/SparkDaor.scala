@@ -76,11 +76,12 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
          |  override protected def transDf2Rdd(df: DataFrame)(implicit env: SparkSession): RDD[$beanClsName] = {
          |    df.rdd.map {
          |      row =>
+         |        val allKeys = row.schema.map(_.toString.split("\\(").last.split(",").head)
          |        val bean = new $beanClsName
          |${
         fieldMeta.map {
           case (fieldName, fieldType, _) =>
-            s"        bean.$fieldName = row.getAs[$fieldType]('$fieldName')".replace("'", "\"")
+            s"        bean.$fieldName = if (allKeys.contains('$fieldName')) row.getAs[$fieldType]('$fieldName') else null".replace("'", "\"")
         }.mkString("\n")
       }
          |        bean
