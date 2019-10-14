@@ -17,11 +17,7 @@ import org.apache.spark.sql.SparkSession
 class Gojira(savePath: String,
              projectName: String,
              projectPkgName: String,
-             whoami: String,
-             tableNames: Seq[String],
-             engineType: EngineType = EngineType.ALL,
-             tableSchema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty,
-             sparkOpt: Option[SparkSession] = None) {
+             whoami: String) {
 
   private val allActors: Seq[Ancestor] = Seq[Ancestor](
     new Beanr(projectPkgName, whoami),
@@ -29,22 +25,26 @@ class Gojira(savePath: String,
     new SparkServicr(projectPkgName, whoami)
   )
 
-  private val actors = if (engineType == EngineType.ALL) allActors
-  else allActors.filter(a => a.actorType == ActorType.BEAN || a.actorType.toString.contains(engineType.toString))
+  private var actors = allActors
 
-  private val schema: Seq[(String, String, Seq[(String, String, String)])] = {
-    //是否有测试的自定义schema
-    if (tableSchema.isEmpty) {
-      val spark = if (sparkOpt.nonEmpty) sparkOpt.get else SparkSession.builder.getOrCreate()
-      tableNames.map {
+  def setActor(engineType: EngineType) = {
+    actors = if (engineType == EngineType.ALL) allActors
+    else allActors.filter(a => a.actorType == ActorType.BEAN || a.actorType.toString.contains(engineType.toString))
+  }
+
+  private var schema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty[(String, String, Seq[(String, String, String)])]
+
+  def setTable(tableNames: Seq[String], spark: SparkSession) = {
+    schema = tableNames.map {
         tableName =>
           val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
           val fieldMeta: Seq[(String, String, String)] = HiveUtil.getScheme(spark, tableName)
           (tableName, baseClass, fieldMeta)
       }
-    } else {
-      tableSchema
-    }
+  }
+
+  def setSchema(tableSchema: Seq[(String, String, Seq[(String, String, String)])]) = {
+    schema = tableSchema
   }
 
   private val projectPath = savePath + "/" + projectName
@@ -81,9 +81,14 @@ class Gojira(savePath: String,
             FileUtil.saveFile(Seq[String](actor.toString), s"$projectPath/$dirName/$fileName")
         }
     }
-    val zip = new ZipCompress(s"$savePath/$projectName.zip", s"$savePath/$projectName")
-    zip.zip()
-    FileUtil.deleteFiles(s"$savePath/$projectName")
+
+    if(FileUtil.isExists(s"$savePath/$projectName")){
+      val zip = new ZipCompress(s"$savePath/$projectName.zip", s"$savePath/$projectName")
+      zip.zip()
+      FileUtil.deleteFiles(s"$savePath/$projectName")
+    }else{
+      println(s"$savePath/$projectName donen't exists, please set table or schema for gojira.")
+    }
   }
 
   private def printSchema(actorTypeStr: String): Unit = {

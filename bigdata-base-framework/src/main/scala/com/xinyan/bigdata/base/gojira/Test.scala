@@ -75,10 +75,11 @@ object Test {
       "/Users/xiaohei/Downloads/tmp/test",
       "gojira-test",
       "com.xinyan.bigdata.gojiratest",
-      whoami,
-      Seq[String](tableName),
-      EngineType.SPARK,
-      Seq((tableName, baseClass, fieldMeta)))
+      whoami
+    )
+
+    gojira.setActor(EngineType.SPARK)
+    gojira.setSchema(Seq((tableName, baseClass, fieldMeta)))
 
     gojira.save()
   }
