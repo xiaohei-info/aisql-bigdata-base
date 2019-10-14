@@ -15,7 +15,7 @@ object TypeMap {
     "bigint" -> "Long",
     "float" -> "Float",
     "double" -> "Double",
-    "decimal" -> "BigDecimal",
+    "decimal" -> "java.math.BigDecimal",
     "timestamp" -> "java.sql.Timestamp",
     "date" -> "java.sql.Date",
     //?
@@ -35,7 +35,7 @@ object TypeMap {
     "Long" -> "LongType",
     "Float" -> "FloatType",
     "Double" -> "DoubleType",
-    "BigDecimal" -> "DataTypes.createDecimalType()",
+    "java.math.BigDecimal" -> "DataTypes.createDecimalType()",
     "java.sql.Timestamp" -> "TimestampType",
     "java.sql.Date" -> "DateType",
     "String" -> "StringType",

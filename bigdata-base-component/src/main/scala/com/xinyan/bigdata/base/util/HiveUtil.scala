@@ -21,7 +21,9 @@ object HiveUtil {
       t =>
         val fieldName = t.name
         val metaJson = JSON.parseObject(t.metadata.toString)
-        val fieldType = TypeMap.hive2JavaType.getOrElse(metaJson.getString("HIVE_TYPE_STRING"), "String")
+        val key = metaJson.getString("HIVE_TYPE_STRING")
+        val purerKey = if (key.contains("(")) key.split("\\(").head else key
+        val fieldType = TypeMap.hive2JavaType.getOrElse(purerKey, "None")
         val fieldComment = if (metaJson.getString("comment") == null) "" else metaJson.getString("comment")
         (fieldName, fieldType, fieldComment)
     }

@@ -49,6 +49,7 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
          |import org.apache.spark.rdd.RDD
          |import org.apache.spark.sql.types._
          |import org.apache.spark.sql.{Row, SparkSession, _}
+         |import com.xinyan.bigdata.base.framework.hive.impl.SparkBaseHiveDaoImpl
          |import $basePackage.dal.bean.$beanClsName
     """.stripMargin
 

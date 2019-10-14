@@ -40,7 +40,7 @@ class SparkServicr(basePackage: String, whoami: String) extends Ancestor {
   override def init(): Unit = {
 
     val beanClsName = s"${baseClass}Bean"
-    val daoClsName = s"${baseClass}Dao"
+    val daoClsName = s"${baseClass}SparkDao"
 
     impPkgs =
       s"""
@@ -55,7 +55,7 @@ class SparkServicr(basePackage: String, whoami: String) extends Ancestor {
 
     val fields: String =
       s"""
-         |  override val dao: BaseHiveDao[SparkSession, RDD[$beanClsName]] = new $daoClsName
+         |  protected override val dao: BaseHiveDao[SparkSession, RDD[$beanClsName]] = new $daoClsName
     """.stripMargin
 
     classModel = initClassModel
