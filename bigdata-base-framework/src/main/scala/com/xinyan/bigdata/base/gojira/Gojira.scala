@@ -14,7 +14,8 @@ import org.apache.spark.sql.SparkSession
   */
 class Gojira(savePath: String, projectName: String,
              projectPkgName: String, whoami: String, tableNames: Seq[String],
-             tableSchema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty) {
+             tableSchema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty,
+             sparkOpt: Option[SparkSession] = None) {
 
   private val actors: Seq[Ancestor] = Seq[Ancestor](
     new Beanr(projectPkgName, whoami),
@@ -23,17 +24,18 @@ class Gojira(savePath: String, projectName: String,
   )
 
   private val schema: Seq[(String, String, Seq[(String, String, String)])] = {
-    //    if (tableSchema.isEmpty) {
-    //      tableNames.map {
-    //        tableName =>
-    //          val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
-    //          val fieldMeta: Seq[(String, String, String)] = HiveUtil.getScheme(spark, tableName)
-    //          (tableName, baseClass, fieldMeta)
-    //      }
-    //    } else {
-    //      tableSchema
-    //    }
-    tableSchema
+    //是否有测试的自定义schema
+    if (tableSchema.isEmpty) {
+      val spark = if (sparkOpt.nonEmpty) sparkOpt.get else SparkSession.builder.getOrCreate()
+      tableNames.map {
+        tableName =>
+          val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
+          val fieldMeta: Seq[(String, String, String)] = HiveUtil.getScheme(spark, tableName)
+          (tableName, baseClass, fieldMeta)
+      }
+    } else {
+      tableSchema
+    }
   }
 
   private val projectPath = savePath + "/" + projectName
