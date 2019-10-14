@@ -86,8 +86,8 @@ class Gojira(savePath: String,
     FileUtil.deleteFiles(s"$savePath/$projectName")
   }
 
-  private def printSchema(actorType: String): Unit = {
-    val currActors = if (actorType == "") actors else actors.filter(_.actorType == actorType)
+  private def printSchema(actorTypeStr: String): Unit = {
+    val currActors = if (actorTypeStr == "") actors else actors.filter(_.actorType.toString.contains(actorTypeStr))
     schema.foreach {
       case (tableName, baseClass, fieldMeta) =>
         currActors.foreach {
