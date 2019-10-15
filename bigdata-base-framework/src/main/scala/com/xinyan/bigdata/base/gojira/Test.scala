@@ -1,6 +1,5 @@
 package com.xinyan.bigdata.base.gojira
 
-import com.xinyan.bigdata.base.framework.util.DataFrameUtil
 import com.xinyan.bigdata.base.gojira.enum.EngineType
 
 /**
@@ -83,7 +82,10 @@ object Test {
 
     gojira.save()
 
-//        val structs = DataFrameUtil.getStructType(classOf[FiGwAgrtExpressOrderEncryptTestBean]).get
-//        structs.foreach(println)
+//    val structs = DataFrameUtil.getStructType(classOf[FiGwAgrtExpressOrderEncryptTestBean]).get
+//    structs.foreach(println)
+//
+//    val service=new FiGwAgrtExpressOrderEncryptTestSparkService
+
   }
 }
