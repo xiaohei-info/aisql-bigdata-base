@@ -19,6 +19,15 @@ import scala.collection.JavaConversions._
   */
 object DataFrameReflactUtil {
 
+  /** cache of Class -> Option[StructType] */
+  private val structTypeCache = new org.apache.commons.collections.map.LRUMap(100)
+
+  /** cache of java.lang.reflect.Type -> Option[DataType] */
+  private val dataTypeCache = new org.apache.commons.collections.map.LRUMap(1000)
+
+  /** cache of Class -> Array[Field] */
+  private val classFieldsCache = collection.mutable.Map[Class[_], Array[Field]]()
+
   /**
     * java/scala 类型对应 spark.sql 的 DataType 类型
     **/
@@ -77,17 +86,24 @@ object DataFrameReflactUtil {
     * 根据Class类型，生成StructType对象
     */
   def getStructType(clazz: Class[_]): Option[StructType] = {
-    //获取Class类型的所有成员变量
-    val fields = ReflactUtil.getFields(clazz)
-    //依次转化为DataType,转化失败则为空
-    val dataTypes = fields.map(f => (f.getName, switchDataType(f.getGenericType))).filter(_._2.nonEmpty).map(f => (f._1, f._2.get))
-    //转化成功后创建StructField
-    val structFields = dataTypes.map {
-      case (fieldName, dataType) =>
-        // 默认所有的字段都可能为空
-        StructField(fieldName, dataType, nullable = true)
+    val cachedStructType = structTypeCache.get(clazz)
+    if (cachedStructType == null) {
+      //获取Class类型的所有成员变量
+      val fields = ReflactUtil.getFields(clazz)
+      //依次转化为DataType,转化失败则为空
+      val dataTypes = fields.map(f => (f.getName, switchDataType(f.getGenericType))).filter(_._2.nonEmpty).map(f => (f._1, f._2.get))
+      //转化成功后创建StructField
+      val structFields = dataTypes.map {
+        case (fieldName, dataType) =>
+          // 默认所有的字段都可能为空
+          StructField(fieldName, dataType, nullable = true)
+      }
+      val newStructType = if (structFields.nonEmpty) Some(StructType(structFields)) else None
+      structTypeCache.put(clazz, newStructType)
+      newStructType
+    } else {
+      cachedStructType.asInstanceOf[Option[StructType]]
     }
-    if (structFields.nonEmpty) Some(StructType(structFields)) else None
   }
 
   /**
@@ -95,54 +111,61 @@ object DataFrameReflactUtil {
     * 递归处理嵌套类型
     */
   private def switchDataType(javaType: java.lang.reflect.Type): Option[DataType] = {
-    javaType match {
-      // 带有泛型的数据类型,e.g. List[String]
-      case ptp: ParameterizedType =>
-        val clazz = ptp.getRawType.asInstanceOf[Class[_]]
-        val rowTypes = ptp.getActualTypeArguments
-        if (ReflactUtil.isScalaMapClass(clazz) || ReflactUtil.isJavaMapClass(clazz)) {
-          (switchDataType(rowTypes(0)), switchDataType(rowTypes(1))) match {
-            case (Some(keyType), Some(valueType)) =>
-              Some(DataTypes.createMapType(keyType, valueType, true))
-            case _ => None
+    val cachedDataType = dataTypeCache.get(javaType)
+    if (cachedDataType == null) {
+      val newDataType = javaType match {
+        // 带有泛型的数据类型,e.g. List[String]
+        case ptp: ParameterizedType =>
+          val clazz = ptp.getRawType.asInstanceOf[Class[_]]
+          val rowTypes = ptp.getActualTypeArguments
+          if (ReflactUtil.isScalaMapClass(clazz) || ReflactUtil.isJavaMapClass(clazz)) {
+            (switchDataType(rowTypes(0)), switchDataType(rowTypes(1))) match {
+              case (Some(keyType), Some(valueType)) =>
+                Some(DataTypes.createMapType(keyType, valueType, true))
+              case _ => None
+            }
+          } else if (ReflactUtil.isScalaIterableClass(clazz) || ReflactUtil.isJavaIterableClass(clazz)) {
+            switchDataType(rowTypes(0)) match {
+              case Some(dataType) => Some(DataTypes.createArrayType(dataType, true))
+              case None => None
+            }
+          } else {
+            //聚合类型,其中还有子字段
+            getStructType(clazz)
           }
-        } else if (ReflactUtil.isScalaIterableClass(clazz) || ReflactUtil.isJavaIterableClass(clazz)) {
-          switchDataType(rowTypes(0)) match {
+        // 泛型数据类型的数组,e.g. Array[List[String]]
+        case gatp: GenericArrayType =>
+          switchDataType(gatp.getGenericComponentType) match {
             case Some(dataType) => Some(DataTypes.createArrayType(dataType, true))
             case None => None
           }
-        } else {
-          //聚合类型,其中还有子字段
-          getStructType(clazz)
-        }
-      // 泛型数据类型的数组,e.g. Array[List[String]]
-      case gatp: GenericArrayType =>
-        switchDataType(gatp.getGenericComponentType) match {
-          case Some(dataType) => Some(DataTypes.createArrayType(dataType, true))
-          case None => None
-        }
-      // 没有泛型的类型（包括没有指定泛型的Map和Collection）
-      case clazz: Class[_] =>
-        preDefinedDataType.get(clazz) match {
-          case Some(tp) => Some(tp)
-          case None =>
-            if (clazz.isArray) {
-              // 非泛型对象的数组
-              switchDataType(clazz.getComponentType) match {
-                case Some(dataType) => Some(DataTypes.createArrayType(dataType, true))
-                case None => None
+        // 没有泛型的类型（包括没有指定泛型的Map和Collection）
+        case clazz: Class[_] =>
+          preDefinedDataType.get(clazz) match {
+            case Some(tp) => Some(tp)
+            case None =>
+              if (clazz.isArray) {
+                // 非泛型对象的数组
+                switchDataType(clazz.getComponentType) match {
+                  case Some(dataType) => Some(DataTypes.createArrayType(dataType, true))
+                  case None => None
+                }
+              } else if (ReflactUtil.isScalaMapClass(clazz) || ReflactUtil.isJavaMapClass(clazz)) {
+                Some(DataTypes.createMapType(StringType, StringType, true))
+              } else if (ReflactUtil.isScalaIterableClass(clazz) || ReflactUtil.isJavaIterableClass(clazz)) {
+                Some(DataTypes.createArrayType(StringType, true))
+              } else {
+                // 一般Object类型，转换为嵌套类型
+                getStructType(clazz)
               }
-            } else if (ReflactUtil.isScalaMapClass(clazz) || ReflactUtil.isJavaMapClass(clazz)) {
-              Some(DataTypes.createMapType(StringType, StringType, true))
-            } else if (ReflactUtil.isScalaIterableClass(clazz) || ReflactUtil.isJavaIterableClass(clazz)) {
-              Some(DataTypes.createArrayType(StringType, true))
-            } else {
-              // 一般Object类型，转换为嵌套类型
-              getStructType(clazz)
-            }
-        }
-      case _ =>
-        throw new IllegalArgumentException("不支持 WildcardType 和 TypeVariable")
+          }
+        case _ =>
+          throw new IllegalArgumentException("不支持 WildcardType 和 TypeVariable")
+      }
+      dataTypeCache.put(javaType, newDataType)
+      newDataType
+    } else {
+      cachedDataType.asInstanceOf[Option[DataType]]
     }
   }
 
@@ -152,8 +175,10 @@ object DataFrameReflactUtil {
     * Class类型中所有的成员变量将会逐一尝试转换为DataType
     **/
   private def getUsefulFields(clazz: Class[_]): Array[Field] = {
-    val fields = ReflactUtil.getFields(clazz)
-    fields.filter(f => switchDataType(f.getGenericType).nonEmpty)
+    classFieldsCache.getOrElseUpdate(clazz, {
+      val fields = ReflactUtil.getFields(clazz)
+      fields.filter(f => switchDataType(f.getGenericType).nonEmpty)
+    })
   }
 
   /**
