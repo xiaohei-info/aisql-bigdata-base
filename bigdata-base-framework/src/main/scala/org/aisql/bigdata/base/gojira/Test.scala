@@ -80,7 +80,7 @@ object Test {
     gojira.setMonster(EngineType.SPARK)
     gojira.setSchema(Seq((tableName, baseClass, fieldMeta)))
 
-    //    gojira.save()
+        gojira.save()
 
     //    val structs = DataFrameUtil.getStructType(classOf[FiGwAgrtExpressOrderEncryptTestBean]).get
     //    structs.foreach(println)

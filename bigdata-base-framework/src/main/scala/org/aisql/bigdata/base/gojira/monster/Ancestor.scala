@@ -2,6 +2,7 @@ package org.aisql.bigdata.base.gojira.monster
 
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
 import org.aisql.bigdata.base.gojira.model.ClassModel
+import org.slf4j.LoggerFactory
 
 /**
   * Author: xiaohei
@@ -10,6 +11,8 @@ import org.aisql.bigdata.base.gojira.model.ClassModel
   * Host: xiaohei.info
   */
 trait Ancestor extends Serializable {
+
+  protected val logger = LoggerFactory.getLogger(this.getClass)
 
   //固定成员属性
   //与 framework 包保持一致

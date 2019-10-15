@@ -31,7 +31,7 @@ public class ZipCompress {
 
     public void zip() throws Exception {
         //File zipFile = new File(zipFileName);
-        System.out.println("压缩中...");
+        System.out.println("compressing...");
 
         //创建zip输出流
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFileName));
@@ -46,7 +46,7 @@ public class ZipCompress {
 
         bos.close();
         out.close();
-        System.out.println("压缩完成");
+        System.out.println("compress done");
 
     }
 

@@ -13,6 +13,8 @@ import org.aisql.bigdata.base.util.DateUtil
   */
 class Beanr(basePackage: String, whoami: String) extends Ancestor {
 
+  logger.info(s"${this.getClass.getSimpleName} init")
+
   override val monsterType: MonsterType = MonsterType.BEAN
 
   override protected var pkgName = s"package $basePackage.dal.bean"
@@ -80,6 +82,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
     classModel.setFields(fields)
     classModel.setMethods(toStringStr)
     classModel.setMethods(toJSONStringStr)
+    logger.info(s"$monsterType class model done")
   }
 
   private def initClassModel: ClassModel = {

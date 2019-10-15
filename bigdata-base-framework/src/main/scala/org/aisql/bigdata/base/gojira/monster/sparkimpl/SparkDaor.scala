@@ -14,6 +14,8 @@ import org.aisql.bigdata.base.util.{DateUtil, StringUtil}
   */
 class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
 
+  logger.info(s"${this.getClass.getSimpleName} init")
+
   private val bottomPkgName = "sparkimpl"
 
   override val monsterType: MonsterType = MonsterType.SPARK_DAO
@@ -112,6 +114,7 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
     classModel.setFields(valFields)
     classModel.setMethods(transDf2Rdd)
     classModel.setMethods(transRdd2Df)
+    logger.info(s"$monsterType class model done")
   }
 
   private def initClassModel: ClassModel = {

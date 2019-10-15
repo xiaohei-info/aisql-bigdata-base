@@ -14,6 +14,8 @@ import org.aisql.bigdata.base.util.DateUtil
   */
 class SparkServicr(basePackage: String, whoami: String) extends Ancestor {
 
+  logger.info(s"${this.getClass.getSimpleName} init")
+
   private val bottomPkgName = "sparkimpl"
 
   override val monsterType: MonsterType = MonsterType.SPARK_SERVICE
@@ -62,6 +64,7 @@ class SparkServicr(basePackage: String, whoami: String) extends Ancestor {
     classModel.setImport(impPkgs)
     classModel.setAuthor(author)
     classModel.setFields(fields)
+    logger.info(s"$monsterType class model done")
   }
 
   private def initClassModel: ClassModel = {
