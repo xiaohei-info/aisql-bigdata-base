@@ -47,8 +47,7 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
       s"""
          |import java.sql.Timestamp
          |import org.apache.spark.rdd.RDD
-         |import org.apache.spark.sql.types._
-         |import org.apache.spark.sql.{Row, SparkSession, _}
+         |import org.apache.spark.sql.{SparkSession, _}
          |import com.xinyan.bigdata.base.framework.util.DataFrameReflactUtil
          |import com.xinyan.bigdata.base.framework.hive.impl.SparkBaseHiveDaoImpl
          |import $basePackage.dal.bean.$beanClsName
@@ -77,14 +76,16 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
          |  override protected def transDf2Rdd(df: DataFrame)(implicit env: SparkSession): RDD[$beanClsName] = {
          |    df.rdd.map {
          |      row =>
-         |        val allKeys = row.schema.map(_.toString.split("\\(").last.split(",").head)
          |        val bean = new $beanClsName
-         |${
-        fieldMeta.map {
-          case (fieldName, fieldType, _) =>
-            s"        bean.$fieldName = if (allKeys.contains('$fieldName')) row.getAs[$fieldType]('$fieldName') else null".replace("'", "\"")
-        }.mkString("\n")
-      }
+         |        val fields = DataFrameReflactUtil.getUsefulFields(classOf[$beanClsName]).map(f => (f.getName, f)).toMap
+         |        row.schema.foreach {
+         |          s =>
+         |            fields.get(s.name).foreach {
+         |              f =>
+         |                f.setAccessible(true)
+         |                f.set(bean, row.get(row.fieldIndex(s.name)))
+         |            }
+         |        }
          |        bean
          |    }
          |  }

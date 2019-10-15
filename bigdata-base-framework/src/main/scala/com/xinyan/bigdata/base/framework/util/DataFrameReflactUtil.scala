@@ -107,6 +107,27 @@ object DataFrameReflactUtil {
   }
 
   /**
+    * 根据Class类型与obj对象数据,生成Row对象
+    *
+    * @param clazz 对象类型
+    * @param obj   携带数据的对象
+    * @return Row中存储Any类型可以直接匹配到StructType的schema中
+    */
+  def generateRowValue(clazz: Class[_], obj: Any): Option[Row] = {
+    //获取可转换字段
+    val fields = getUsefulFields(clazz)
+    if (fields.isEmpty) return None
+
+    //值为null时也要返回null
+    if (obj == null) {
+      Some(null)
+    }
+    else {
+      Some(Row(fields.flatMap(f => getCell(f.getGenericType, f.get(obj))): _*))
+    }
+  }
+
+  /**
     * 根据 java.lang.reflect.Type 获取 org.apache.spark.sql.types.DataType
     * 递归处理嵌套类型
     */
@@ -174,33 +195,13 @@ object DataFrameReflactUtil {
     * 根据Class类型获取可用的成员变量(可被转换为DataType类型)
     * Class类型中所有的成员变量将会逐一尝试转换为DataType
     **/
-  private def getUsefulFields(clazz: Class[_]): Array[Field] = {
+  def getUsefulFields(clazz: Class[_]): Array[Field] = {
     classFieldsCache.getOrElseUpdate(clazz, {
       val fields = ReflactUtil.getFields(clazz)
       fields.filter(f => switchDataType(f.getGenericType).nonEmpty)
     })
   }
 
-  /**
-    * 根据Class类型与obj对象数据,生成Row对象
-    *
-    * @param clazz 对象类型
-    * @param obj   携带数据的对象
-    * @return Row中存储Any类型可以直接匹配到StructType的schema中
-    */
-  def generateRowValue(clazz: Class[_], obj: Any): Option[Row] = {
-    //获取可转换字段
-    val fields = getUsefulFields(clazz)
-    if (fields.isEmpty) return None
-
-    //值为null时也要返回null
-    if (obj == null) {
-      Some(null)
-    }
-    else {
-      Some(Row(fields.flatMap(f => getCell(f.getGenericType, f.get(obj))): _*))
-    }
-  }
 
   /**
     * 根据字段类型和字段值,转换为Row中的Cell
