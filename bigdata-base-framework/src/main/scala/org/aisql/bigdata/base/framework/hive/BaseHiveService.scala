@@ -1,6 +1,7 @@
 package org.aisql.bigdata.base.framework.hive
 
 import org.aisql.bigdata.base.framework.enums.TableType
+import org.slf4j.LoggerFactory
 
 
 /**
@@ -10,6 +11,8 @@ import org.aisql.bigdata.base.framework.enums.TableType
   * Host: xiaohei.info
   */
 trait BaseHiveService[E, R] extends Serializable {
+
+  protected val logger = LoggerFactory.getLogger(this.getClass.getSimpleName)
 
   protected val dao: BaseHiveDao[E, R]
 
@@ -105,6 +108,7 @@ trait BaseHiveService[E, R] extends Serializable {
     **/
   def select(cols: Seq[String], whereStr: String, limitNum: Int)
             (implicit env: E): R = {
+    logger.info(s"table type: ${dao.TABLE_TYPE}")
     dao.TABLE_TYPE match {
       case TableType.TABLE => dao.fromHive(cols, whereStr, limitNum)
       case TableType.PARQUET => dao.fromParquet(cols, whereStr, limitNum)

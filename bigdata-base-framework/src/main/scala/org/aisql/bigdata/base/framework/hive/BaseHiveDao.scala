@@ -2,6 +2,7 @@ package org.aisql.bigdata.base.framework.hive
 
 import org.aisql.bigdata.base.framework.enums.TableType
 import org.aisql.bigdata.base.framework.enums.TableType.TableTypeEnum
+import org.slf4j.LoggerFactory
 
 /**
   * Author: xiaohei
@@ -10,6 +11,8 @@ import org.aisql.bigdata.base.framework.enums.TableType.TableTypeEnum
   * Host: xiaohei.info
   */
 trait BaseHiveDao[E, R] extends Serializable {
+
+  protected val logger = LoggerFactory.getLogger(this.getClass.getSimpleName)
 
   /**
     * 数据库名
@@ -32,7 +35,7 @@ trait BaseHiveDao[E, R] extends Serializable {
   val HDFS_PATH: String
 
   /**
-    * 表类型,table or parquet
+    * 表类型,table or parquet,默认为table,可在子类中重写
     **/
   val TABLE_TYPE: TableTypeEnum = TableType.TABLE
 
