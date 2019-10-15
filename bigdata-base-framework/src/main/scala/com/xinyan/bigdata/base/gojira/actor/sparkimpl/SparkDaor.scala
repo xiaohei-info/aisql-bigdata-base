@@ -49,6 +49,7 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
          |import org.apache.spark.rdd.RDD
          |import org.apache.spark.sql.types._
          |import org.apache.spark.sql.{Row, SparkSession, _}
+         |import com.xinyan.bigdata.base.framework.util.DataFrameReflactUtil
          |import com.xinyan.bigdata.base.framework.hive.impl.SparkBaseHiveDaoImpl
          |import $basePackage.dal.bean.$beanClsName
     """.stripMargin
@@ -98,19 +99,8 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
          |    * @return DataFrame对象
          |    **/
          |  override protected def transRdd2Df(rdd: RDD[$beanClsName])(implicit env: SparkSession): DataFrame = {
-         |    val structs = StructType(Seq[StructField](
-         |${
-        fieldMeta.map {
-          case (fieldName, fieldType, _) =>
-            s"        StructField('$fieldName', ${TypeMap.java2SparkdfType.getOrElse(fieldType, "StringType")}, nullable = true),".replace("'", "\"")
-        }.mkString("\n").replaceAll(",$", "")
-      }
-         |    ))
-         |
-       |    val rowRdd = rdd.map {
-         |      r =>
-         |        Row.fromSeq(r.toString.split(","))
-         |    }
+         |    val structs = DataFrameReflactUtil.getStructType(classOf[$beanClsName]).get
+         |    val rowRdd = rdd.flatMap(r => DataFrameReflactUtil.generateRowValue(classOf[$beanClsName], r))
          |    env.createDataFrame(rowRdd, structs)
          |  }
     """.stripMargin
