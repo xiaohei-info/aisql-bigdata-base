@@ -77,15 +77,15 @@ object Test {
       whoami
     )
 
-    gojira.setActor(EngineType.SPARK)
+    gojira.setMonster(EngineType.SPARK)
     gojira.setSchema(Seq((tableName, baseClass, fieldMeta)))
 
-    gojira.save()
+    //    gojira.save()
 
-//    val structs = DataFrameUtil.getStructType(classOf[FiGwAgrtExpressOrderEncryptTestBean]).get
-//    structs.foreach(println)
-//
-//    val service=new FiGwAgrtExpressOrderEncryptTestSparkService
+    //    val structs = DataFrameUtil.getStructType(classOf[FiGwAgrtExpressOrderEncryptTestBean]).get
+    //    structs.foreach(println)
+    //
+    //    val service=new FiGwAgrtExpressOrderEncryptTestSparkService
 
   }
 }

@@ -1,8 +1,8 @@
-package org.aisql.bigdata.base.gojira.actor.sparkimpl
+package org.aisql.bigdata.base.gojira.monster.sparkimpl
 
-import org.aisql.bigdata.base.gojira.actor.Ancestor
-import org.aisql.bigdata.base.gojira.enum.ActorType
-import org.aisql.bigdata.base.gojira.enum.ActorType.ActorType
+import org.aisql.bigdata.base.gojira.monster.Ancestor
+import org.aisql.bigdata.base.gojira.enum.MonsterType
+import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
 import org.aisql.bigdata.base.gojira.model.ClassModel
 import org.aisql.bigdata.base.util.{DateUtil, StringUtil}
 
@@ -16,7 +16,7 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
 
   private val bottomPkgName = "sparkimpl"
 
-  override val actorType: ActorType = ActorType.SPARK_DAO
+  override val monsterType: MonsterType = MonsterType.SPARK_DAO
 
   override protected var pkgName: String = s"package $basePackage.dal.dao.$bottomPkgName"
 
@@ -118,7 +118,7 @@ class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
     //todo: SparkBaseHiveDaoImpl 名称需要与 org.aisql.bigdata.base.framework.hive.impl.SparkBaseHiveDaoImpl 保持一致
     val clsHeader: String =
       s"""
-         |class $baseClass$actorType extends SparkBaseHiveDaoImpl[${baseClass}Bean]""".stripMargin
+         |class $baseClass$monsterType extends SparkBaseHiveDaoImpl[${baseClass}Bean]""".stripMargin
     new ClassModel(pkgName, clsHeader)
   }
 

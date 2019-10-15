@@ -1,7 +1,7 @@
-package org.aisql.bigdata.base.gojira.actor
+package org.aisql.bigdata.base.gojira.monster
 
-import org.aisql.bigdata.base.gojira.enum.ActorType
-import org.aisql.bigdata.base.gojira.enum.ActorType.ActorType
+import org.aisql.bigdata.base.gojira.enum.MonsterType
+import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
 import org.aisql.bigdata.base.gojira.model.ClassModel
 import org.aisql.bigdata.base.util.DateUtil
 
@@ -13,7 +13,7 @@ import org.aisql.bigdata.base.util.DateUtil
   */
 class Beanr(basePackage: String, whoami: String) extends Ancestor {
 
-  override val actorType: ActorType = ActorType.BEAN
+  override val monsterType: MonsterType = MonsterType.BEAN
 
   override protected var pkgName = s"package $basePackage.dal.bean"
 
@@ -86,7 +86,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
     //最后行不可换行,保持 class{ 风格的代码
     val classHeader =
       s"""
-         |class $baseClass$actorType extends Serializable""".stripMargin
+         |class $baseClass$monsterType extends Serializable""".stripMargin
     new ClassModel(pkgName, classHeader)
   }
 

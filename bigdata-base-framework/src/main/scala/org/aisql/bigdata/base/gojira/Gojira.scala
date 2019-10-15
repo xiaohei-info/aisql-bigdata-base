@@ -1,9 +1,9 @@
 package org.aisql.bigdata.base.gojira
 
-import org.aisql.bigdata.base.gojira.actor.sparkimpl.{SparkDaor, SparkServicr}
-import org.aisql.bigdata.base.gojira.actor.{Ancestor, Beanr}
+import org.aisql.bigdata.base.gojira.monster.sparkimpl.{SparkDaor, SparkServicr}
+import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
 import org.aisql.bigdata.base.gojira.enum.EngineType.EngineType
-import org.aisql.bigdata.base.gojira.enum.{ActorType, EngineType}
+import org.aisql.bigdata.base.gojira.enum.{MonsterType, EngineType}
 import org.aisql.bigdata.base.java.ZipCompress
 import org.aisql.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
@@ -19,17 +19,17 @@ class Gojira(savePath: String,
              projectPkgName: String,
              whoami: String) {
 
-  private val allActors: Seq[Ancestor] = Seq[Ancestor](
+  private val allMonsters: Seq[Ancestor] = Seq[Ancestor](
     new Beanr(projectPkgName, whoami),
     new SparkDaor(projectPkgName, whoami),
     new SparkServicr(projectPkgName, whoami)
   )
 
-  private var actors = allActors
+  private var monsters = allMonsters
 
-  def setActor(engineType: EngineType) = {
-    actors = if (engineType == EngineType.ALL) allActors
-    else allActors.filter(a => a.actorType == ActorType.BEAN || a.actorType.toString.contains(engineType.toString))
+  def setMonster(engineType: EngineType) = {
+    monsters = if (engineType == EngineType.ALL) allMonsters
+    else allMonsters.filter(a => a.monsterType == MonsterType.BEAN || a.monsterType.toString.contains(engineType.toString))
   }
 
   private var schema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty[(String, String, Seq[(String, String, String)])]
@@ -69,17 +69,17 @@ class Gojira(savePath: String,
     if (!checkDir) return
     schema.foreach {
       case (tableName, baseClass, fieldMeta) =>
-        actors.foreach {
-          actor =>
-            actor.database = tableName.split("\\.").head
-            actor.baseClass = baseClass
-            actor.fieldMeta = fieldMeta
-            actor.init()
+        monsters.foreach {
+          monster =>
+            monster.database = tableName.split("\\.").head
+            monster.baseClass = baseClass
+            monster.fieldMeta = fieldMeta
+            monster.init()
 
             //获取项目名到文件名之间的路径名称
-            val dirName = actor.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
-            val fileName = s"$baseClass${actor.actorType}.scala"
-            FileUtil.saveFile(Seq[String](actor.toString), s"$projectPath/$dirName/$fileName")
+            val dirName = monster.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
+            val fileName = s"$baseClass${monster.monsterType}.scala"
+            FileUtil.saveFile(Seq[String](monster.toString), s"$projectPath/$dirName/$fileName")
         }
     }
 
@@ -92,17 +92,17 @@ class Gojira(savePath: String,
     }
   }
 
-  private def printSchema(actorTypeStr: String): Unit = {
-    val currActors = if (actorTypeStr == "") actors else actors.filter(_.actorType.toString.contains(actorTypeStr))
+  private def printSchema(monsterTypeStr: String): Unit = {
+    val currMonster = if (monsterTypeStr == "") monsters else monsters.filter(_.monsterType.toString.contains(monsterTypeStr))
     schema.foreach {
       case (tableName, baseClass, fieldMeta) =>
-        currActors.foreach {
-          actor =>
-            actor.database = tableName.split("\\.").head
-            actor.baseClass = baseClass
-            actor.fieldMeta = fieldMeta
-            actor.init()
-            println(actor.toString)
+        currMonster.foreach {
+          monster =>
+            monster.database = tableName.split("\\.").head
+            monster.baseClass = baseClass
+            monster.fieldMeta = fieldMeta
+            monster.init()
+            println(monster.toString)
         }
     }
   }

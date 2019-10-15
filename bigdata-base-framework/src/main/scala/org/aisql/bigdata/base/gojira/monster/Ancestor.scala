@@ -1,6 +1,6 @@
-package org.aisql.bigdata.base.gojira.actor
+package org.aisql.bigdata.base.gojira.monster
 
-import org.aisql.bigdata.base.gojira.enum.ActorType.ActorType
+import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
 import org.aisql.bigdata.base.gojira.model.ClassModel
 
 /**
@@ -20,7 +20,7 @@ trait Ancestor extends Serializable {
   /**
     * 生产器类型,Bean、Dao、Serivce等
     **/
-  val actorType: ActorType
+  val monsterType: MonsterType
 
   //外部传入的属性,引用时注意必须在设置之后使用
 

@@ -6,8 +6,8 @@ package org.aisql.bigdata.base.gojira.enum
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-object ActorType extends Enumeration {
-  type ActorType = Value
+object MonsterType extends Enumeration {
+  type MonsterType = Value
   val BEAN = Value("Bean")
   val SPARK_DAO = Value("SparkDao")
   val SPARK_SERVICE = Value("SparkService")
