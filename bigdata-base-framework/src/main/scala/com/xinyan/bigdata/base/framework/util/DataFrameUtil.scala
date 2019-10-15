@@ -1,4 +1,4 @@
-package com.xinyan.bigdata.base.gojira
+package com.xinyan.bigdata.base.framework.util
 
 import java.lang.reflect.{GenericArrayType, Modifier, ParameterizedType, Field}
 import java.lang.{Iterable => JIterable}
@@ -9,11 +9,13 @@ import scala.collection.JavaConversions._
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.{DataType, StructField, StructType, DecimalType, DataTypes}
 import org.apache.spark.sql.types.DataTypes._
-
 /**
-  * @author yizhu.sun 2016年7月21日
+  * Author: xiaohei
+  * Date: 2019/10/15
+  * Email: xiaohei.info@gmail.com
+  * Host: xiaohei.info
   */
-object DataFrameReflectUtil {
+object DataFrameUtil {
 
   /** 成员变量的类型和sparkSQL类型的映射 */
   val predefinedDataType: collection.mutable.Map[Class[_], DataType] =
@@ -43,7 +45,6 @@ object DataFrameReflectUtil {
       (classOf[java.util.Date], DateType),
       (classOf[java.sql.Date], DateType),
       (classOf[java.security.Timestamp], TimestampType),
-      (classOf[java.sql.Timestamp], TimestampType),
       (classOf[java.util.Calendar], CalendarIntervalType),
       // 成员为Object类型的，都转为String
       (classOf[Any], StringType))
@@ -304,4 +305,3 @@ object DataFrameReflectUtil {
     }
 
 }
-
