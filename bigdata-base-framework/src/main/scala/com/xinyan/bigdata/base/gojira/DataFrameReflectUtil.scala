@@ -43,6 +43,7 @@ object DataFrameReflectUtil {
       (classOf[java.util.Date], DateType),
       (classOf[java.sql.Date], DateType),
       (classOf[java.security.Timestamp], TimestampType),
+      (classOf[java.sql.Timestamp], TimestampType),
       (classOf[java.util.Calendar], CalendarIntervalType),
       // 成员为Object类型的，都转为String
       (classOf[Any], StringType))
