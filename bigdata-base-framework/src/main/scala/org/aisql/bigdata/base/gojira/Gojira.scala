@@ -83,7 +83,7 @@ class Gojira(savePath: String,
     if (!checkDir) return
     schema.foreach {
       tbs =>
-        logger.info(s"start ${tbs.tableName} job")
+        logger.info(s"start ${tbs.tableName} job, total fields: ${tbs.fieldsMeta.size}")
         monsters.foreach {
           monster =>
             logger.info(s"monster ${monster.monsterType} aoaoao~~~")
