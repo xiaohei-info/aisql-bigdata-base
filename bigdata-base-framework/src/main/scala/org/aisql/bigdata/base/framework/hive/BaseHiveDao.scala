@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory
   */
 trait BaseHiveDao[E, R] extends Serializable {
 
-  protected val logger = LoggerFactory.getLogger(this.getClass.getSimpleName)
-
   /**
     * 数据库名
     **/

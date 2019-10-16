@@ -36,7 +36,7 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   override def fromParquet(cols: Seq[String], whereStr: String, limitNum: Int)
                           (implicit env: SparkSession): RDD[B] = {
     val tmpTableName = FULL_TABLENAME + "_tmpview"
-    logger.info(s"create tmp view: $tmpTableName")
+    println(s"create tmp view: $tmpTableName")
     env.read.parquet(HDFS_PATH).createOrReplaceTempView(tmpTableName)
     readData(tmpTableName, cols, whereStr, limitNum)
   }
@@ -49,12 +49,12 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   override def saveAsTable(partitionKeys: Seq[String] = Seq.empty, result: RDD[B])
                           (implicit env: SparkSession): Unit = {
     val df = transRdd2Df(result)
-    logger.info(s"save to $FULL_TABLENAME")
+    println(s"save to $FULL_TABLENAME")
     if (partitionKeys.nonEmpty) {
-      logger.info(s"partition keys: ${partitionKeys.mkString(",")}")
+      println(s"partition keys: ${partitionKeys.mkString(",")}")
       df.write.partitionBy(partitionKeys: _*).saveAsTable(FULL_TABLENAME)
     } else {
-      logger.info("no partition keys, save as normal table")
+      println("no partition keys, save as normal table")
       df.write.saveAsTable(FULL_TABLENAME)
     }
   }
@@ -67,7 +67,7 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   override def insertInto(isOverwrite: Boolean, result: RDD[B])
                          (implicit env: SparkSession): Unit = {
     val df = transRdd2Df(result)
-    logger.info(s"insert into $FULL_TABLENAME, isOverwrite: $isOverwrite")
+    println(s"insert into $FULL_TABLENAME, isOverwrite: $isOverwrite")
     if (isOverwrite) {
       df.write.mode(SaveMode.Overwrite).insertInto(FULL_TABLENAME)
     } else {
@@ -83,12 +83,12 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   override def writeParquet(partitionKeys: Seq[String] = Seq.empty, result: RDD[B])
                            (implicit env: SparkSession): Unit = {
     val df = transRdd2Df(result)
-    logger.info(s"write parquet to $HDFS_PATH")
+    println(s"write parquet to $HDFS_PATH")
     if (partitionKeys.nonEmpty) {
-      logger.info(s"partition keys: ${partitionKeys.mkString(",")}")
+      println(s"partition keys: ${partitionKeys.mkString(",")}")
       df.write.partitionBy(partitionKeys: _*).parquet(HDFS_PATH)
     } else {
-      logger.info("no partition keys, save as normal table")
+      println("no partition keys, save as normal table")
       df.write.parquet(HDFS_PATH)
     }
   }
@@ -122,7 +122,7 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
     sql = if (whereStr.nonEmpty) s"$sql where $whereStr" else sql
     sql = if (limitNum > 0) s"$sql limit $limitNum"
     else sql
-    logger.info(s"exec sql: $sql")
+    println(s"exec sql: $sql")
     transDf2Rdd(env.sql(sql))
   }
 
