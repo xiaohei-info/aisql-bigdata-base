@@ -127,6 +127,20 @@ object DataFrameReflactUtil {
     }
   }
 
+  def generatePojoValue(clazz: Class[_], row: Row): Any = {
+    val bean = clazz.newInstance()
+    val fields = getUsefulFields(clazz).map(f => (f.getName, f)).toMap
+    row.schema.foreach {
+      s =>
+        fields.get(s.name).foreach {
+          f =>
+            f.setAccessible(true)
+            f.set(bean, row.get(row.fieldIndex(s.name)))
+        }
+    }
+    bean
+  }
+
   /**
     * 根据 java.lang.reflect.Type 获取 org.apache.spark.sql.types.DataType
     * 递归处理嵌套类型
@@ -195,7 +209,7 @@ object DataFrameReflactUtil {
     * 根据Class类型获取可用的成员变量(可被转换为DataType类型)
     * Class类型中所有的成员变量将会逐一尝试转换为DataType
     **/
-  def getUsefulFields(clazz: Class[_]): Array[Field] = {
+  private def getUsefulFields(clazz: Class[_]): Array[Field] = {
     classFieldsCache.getOrElseUpdate(clazz, {
       val fields = ReflactUtil.getFields(clazz)
       fields.filter(f => switchDataType(f.getGenericType).nonEmpty)

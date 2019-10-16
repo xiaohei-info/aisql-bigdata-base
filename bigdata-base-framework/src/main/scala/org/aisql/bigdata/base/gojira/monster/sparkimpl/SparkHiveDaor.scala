@@ -77,17 +77,7 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
          |  override protected def transDf2Rdd(df: DataFrame)(implicit env: SparkSession): RDD[$beanClsName] = {
          |    df.rdd.map {
          |      row =>
-         |        val bean = new $beanClsName
-         |        val fields = DataFrameReflactUtil.getUsefulFields(classOf[$beanClsName]).map(f => (f.getName, f)).toMap
-         |        row.schema.foreach {
-         |          s =>
-         |            fields.get(s.name).foreach {
-         |              f =>
-         |                f.setAccessible(true)
-         |                f.set(bean, row.get(row.fieldIndex(s.name)))
-         |            }
-         |        }
-         |        bean
+         |        DataFrameReflactUtil.generatePojoValue(classOf[$beanClsName], row).asInstanceOf[$beanClsName]
          |    }
          |  }
     """.stripMargin
