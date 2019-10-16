@@ -1,8 +1,8 @@
 package org.aisql.bigdata.base.framework.hive
 
+import org.aisql.bigdata.base.framework.Daoable
 import org.aisql.bigdata.base.framework.enums.TableType
 import org.aisql.bigdata.base.framework.enums.TableType.TableTypeEnum
-import org.slf4j.LoggerFactory
 
 /**
   * Author: xiaohei
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-trait BaseHiveDao[E, R] extends Serializable {
+trait BaseHiveDao[E, R] extends Daoable with Serializable {
 
   /**
     * 数据库名

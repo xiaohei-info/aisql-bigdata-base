@@ -1,5 +1,6 @@
 package org.aisql.bigdata.base.framework.hive
 
+import org.aisql.bigdata.base.framework.Serviceable
 import org.aisql.bigdata.base.framework.enums.TableType
 import org.slf4j.LoggerFactory
 
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-trait BaseHiveService[E, R] extends Serializable {
+trait BaseHiveService[E, R] extends Serviceable with Serializable {
 
   protected val dao: BaseHiveDao[E, R]
 
