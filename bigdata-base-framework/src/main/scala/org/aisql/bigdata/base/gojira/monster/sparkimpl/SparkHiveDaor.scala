@@ -12,7 +12,7 @@ import org.aisql.bigdata.base.util.{DateUtil, StringUtil}
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-class SparkDaor(basePackage: String, whoami: String) extends Ancestor {
+class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
 
   logger.info(s"${this.getClass.getSimpleName} init")
 

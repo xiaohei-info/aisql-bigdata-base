@@ -1,6 +1,6 @@
 package org.aisql.bigdata.base.gojira
 
-import org.aisql.bigdata.base.gojira.monster.sparkimpl.{SparkDaor, SparkServicr}
+import org.aisql.bigdata.base.gojira.monster.sparkimpl.{SparkHiveDaor, SparkHiveServicr}
 import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
 import org.aisql.bigdata.base.gojira.enum.EngineType.EngineType
 import org.aisql.bigdata.base.gojira.enum.{EngineType, MonsterType}
@@ -26,8 +26,8 @@ class Gojira(savePath: String,
 
   private val allMonsters: Seq[Ancestor] = Seq[Ancestor](
     new Beanr(projectPkgName, whoami),
-    new SparkDaor(projectPkgName, whoami),
-    new SparkServicr(projectPkgName, whoami)
+    new SparkHiveDaor(projectPkgName, whoami),
+    new SparkHiveServicr(projectPkgName, whoami)
   )
 
   logger.info("all monsters already init")

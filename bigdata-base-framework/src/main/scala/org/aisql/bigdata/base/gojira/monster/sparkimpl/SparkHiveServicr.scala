@@ -12,7 +12,7 @@ import org.aisql.bigdata.base.util.DateUtil
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-class SparkServicr(basePackage: String, whoami: String) extends Ancestor {
+class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor {
 
   logger.info(s"${this.getClass.getSimpleName} init")
 
