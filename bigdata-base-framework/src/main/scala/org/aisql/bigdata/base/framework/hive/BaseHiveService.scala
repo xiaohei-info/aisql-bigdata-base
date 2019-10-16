@@ -106,7 +106,7 @@ trait BaseHiveService[E, R] extends Serializable {
     **/
   def select(cols: Seq[String], whereStr: String, limitNum: Int)
             (implicit env: E): R = {
-    println(s"table type: ${dao.TABLE_TYPE}")
+    println(s"data type: ${dao.TABLE_TYPE}")
     dao.TABLE_TYPE match {
       case TableType.TABLE => dao.fromHive(cols, whereStr, limitNum)
       case TableType.PARQUET => dao.fromParquet(cols, whereStr, limitNum)
