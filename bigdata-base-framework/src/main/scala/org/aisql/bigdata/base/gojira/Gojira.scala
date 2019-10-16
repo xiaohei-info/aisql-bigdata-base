@@ -4,6 +4,7 @@ import org.aisql.bigdata.base.gojira.monster.sparkimpl.{SparkHiveDaor, SparkHive
 import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
 import org.aisql.bigdata.base.gojira.enum.EngineType.EngineType
 import org.aisql.bigdata.base.gojira.enum.{EngineType, MonsterType}
+import org.aisql.bigdata.base.gojira.model.{FieldMeta, TableSchema}
 import org.aisql.bigdata.base.java.ZipCompress
 import org.aisql.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
@@ -41,23 +42,23 @@ class Gojira(savePath: String,
     logger.info(s"monsters: ${monsters.map(_.getClass.getSimpleName).mkString(",")}")
   }
 
-  private var schema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty[(String, String, Seq[(String, String, String)])]
+  private var schema: Seq[TableSchema] = Seq.empty[TableSchema]
 
   def setTable(tableNames: Seq[String], spark: SparkSession) = {
     logger.info("set table connect to hive and init schemas")
     schema = tableNames.map {
       tableName =>
         val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
-        val fieldMeta: Seq[(String, String, String)] = HiveUtil.getScheme(spark, tableName)
+        val fieldMeta: Seq[FieldMeta] = HiveUtil.getScheme(spark, tableName).map(x => FieldMeta(x._1, x._2, x._3))
         logger.info(s"HiveUtil.getScheme --> $baseClass get ${fieldMeta.size} fields")
-        (tableName, baseClass, fieldMeta)
+        TableSchema(tableName, baseClass, fieldMeta)
     }
     logger.info("schemas init finished")
   }
 
-  def setSchema(tableSchema: Seq[(String, String, Seq[(String, String, String)])]) = {
-    logger.info(s"get test tableSchema, num of tables: ${tableSchema.size}")
-    schema = tableSchema
+  def setSchema(tablesSchema: Seq[TableSchema]) = {
+    logger.info(s"get test tableSchema, num of tables: ${tablesSchema.size}")
+    schema = tablesSchema
   }
 
   private val projectPath = savePath + "/" + projectName
@@ -81,19 +82,19 @@ class Gojira(savePath: String,
   def save(): Unit = {
     if (!checkDir) return
     schema.foreach {
-      case (tableName, baseClass, fieldMeta) =>
-        logger.info(s"start $tableName job")
+      tbs =>
+        logger.info(s"start ${tbs.tableName} job")
         monsters.foreach {
           monster =>
             logger.info(s"monster ${monster.monsterType} aoaoao~~~")
-            monster.database = tableName.split("\\.").head
-            monster.baseClass = baseClass
-            monster.fieldMeta = fieldMeta
+            monster.database = tbs.tableName.split("\\.").head
+            monster.baseClass = tbs.baseClass
+            monster.fieldMeta = tbs.fieldsMeta
             monster.init()
 
             //获取项目名到文件名之间的路径名称
             val dirName = monster.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
-            val fileName = s"$baseClass${monster.monsterType}.scala"
+            val fileName = s"${tbs.baseClass}${monster.monsterType}.scala"
             logger.info(s"${monster.monsterType} save name: $projectPath$dirName/$fileName")
             FileUtil.saveFile(Seq[String](monster.toString), s"$projectPath$dirName/$fileName")
             logger.info("save done")
@@ -115,12 +116,12 @@ class Gojira(savePath: String,
   private def printSchema(monsterTypeStr: String): Unit = {
     val currMonster = if (monsterTypeStr == "") monsters else monsters.filter(_.monsterType.toString.contains(monsterTypeStr))
     schema.foreach {
-      case (tableName, baseClass, fieldMeta) =>
+      tbs =>
         currMonster.foreach {
           monster =>
-            monster.database = tableName.split("\\.").head
-            monster.baseClass = baseClass
-            monster.fieldMeta = fieldMeta
+            monster.database = tbs.tableName.split("\\.").head
+            monster.baseClass = tbs.baseClass
+            monster.fieldMeta = tbs.fieldsMeta
             monster.init()
             println(monster.toString)
         }

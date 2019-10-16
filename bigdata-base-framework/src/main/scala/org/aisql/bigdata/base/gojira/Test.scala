@@ -1,6 +1,7 @@
 package org.aisql.bigdata.base.gojira
 
 import org.aisql.bigdata.base.gojira.enum.EngineType
+import org.aisql.bigdata.base.gojira.model.{FieldMeta, TableSchema}
 
 /**
   * Author: xiaohei
@@ -65,7 +66,7 @@ object Test {
       ("pk_year", "String", ""),
       ("pk_month", "String", ""),
       ("pk_day", "String", "")
-    )
+    ).map(x => FieldMeta(x._1, x._2, x._3))
     val tableName = "xy_jiangyuande.fi_gw_agrt_express_order_encrypt_test"
     val baseClass: String = "FiGwAgrtExpressOrderEncryptTest"
     val whoami = "xiaohei"
@@ -78,9 +79,9 @@ object Test {
     )
 
     gojira.setMonster(EngineType.SPARK)
-    gojira.setSchema(Seq((tableName, baseClass, fieldMeta)))
+    gojira.setSchema(Seq(TableSchema(tableName, baseClass, fieldMeta)))
 
-        gojira.save()
+    gojira.save()
 
     //    val structs = DataFrameUtil.getStructType(classOf[FiGwAgrtExpressOrderEncryptTestBean]).get
     //    structs.foreach(println)

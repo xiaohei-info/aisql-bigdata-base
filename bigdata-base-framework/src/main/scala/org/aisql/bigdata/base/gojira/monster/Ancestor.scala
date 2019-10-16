@@ -1,7 +1,7 @@
 package org.aisql.bigdata.base.gojira.monster
 
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
-import org.aisql.bigdata.base.gojira.model.ClassModel
+import org.aisql.bigdata.base.gojira.model.{ClassModel, FieldMeta}
 import org.slf4j.LoggerFactory
 
 /**
@@ -40,7 +40,7 @@ trait Ancestor extends Serializable {
   /**
     * 表结构的元数据信息列表
     **/
-  var fieldMeta: Seq[(String, String, String)] = Seq.empty[(String, String, String)]
+  var fieldMeta: Seq[FieldMeta] = Seq.empty[FieldMeta]
 
   //子类需要实现,将会在调用构造函数时初始化一次,可以在后续的init过程修改
 

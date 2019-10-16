@@ -2,7 +2,7 @@ package org.aisql.bigdata.base.gojira.monster
 
 import org.aisql.bigdata.base.gojira.enum.MonsterType
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
-import org.aisql.bigdata.base.gojira.model.ClassModel
+import org.aisql.bigdata.base.gojira.model.{ClassModel, FieldMeta}
 import org.aisql.bigdata.base.util.DateUtil
 
 /**
@@ -43,7 +43,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
     **/
   override def init(): Unit = {
     val fields = fieldMeta.map {
-      case (fieldName, fieldType, fieldComment) =>
+      case FieldMeta(fieldName, fieldType, fieldComment) =>
         s"""
            |  /**
            |    * $fieldComment
@@ -57,7 +57,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
          |  override def toString = {
          |    s"${
         fieldMeta.map {
-          case (fieldName, _, _) => "$" + fieldName
+          case FieldMeta(fieldName, _, _) => "$" + fieldName
         }.mkString(",")
       }"
          |  }
@@ -69,7 +69,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
          |    val json = new JSONObject()
          |${
         fieldMeta.map {
-          case (fieldName, _, _) => s"    json.put('$fieldName', $fieldName)".replace("'", "\"")
+          case FieldMeta(fieldName, _, _) => s"    json.put('$fieldName', $fieldName)".replace("'", "\"")
         }.mkString("\n")
       }
          |    json.toJSONString
