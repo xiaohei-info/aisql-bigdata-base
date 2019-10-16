@@ -18,7 +18,7 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor {
 
   private val bottomPkgName = "sparkimpl"
 
-  override val monsterType: MonsterType = MonsterType.SPARK_SERVICE
+  override val monsterType: MonsterType = MonsterType.SPARK_HIVE_SERVICE
 
   override protected var pkgName: String = s"package $basePackage.service.$bottomPkgName"
 
@@ -41,8 +41,8 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor {
     **/
   override def init(): Unit = {
 
-    val beanClsName = s"${baseClass}Bean"
-    val daoClsName = s"${baseClass}SparkDao"
+    val beanClsName = s"$baseClass${MonsterType.BEAN}"
+    val daoClsName = s"$baseClass${MonsterType.SPARK_HIVE_DAO}"
 
     impPkgs =
       s"""

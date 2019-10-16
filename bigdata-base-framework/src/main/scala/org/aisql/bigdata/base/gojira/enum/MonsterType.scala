@@ -9,6 +9,6 @@ package org.aisql.bigdata.base.gojira.enum
 object MonsterType extends Enumeration {
   type MonsterType = Value
   val BEAN = Value("Bean")
-  val SPARK_DAO = Value("SparkDao")
-  val SPARK_SERVICE = Value("SparkService")
+  val SPARK_HIVE_DAO = Value("SparkHiveDao")
+  val SPARK_HIVE_SERVICE = Value("SparkHiveService")
 }

@@ -18,7 +18,7 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
 
   private val bottomPkgName = "sparkimpl"
 
-  override val monsterType: MonsterType = MonsterType.SPARK_DAO
+  override val monsterType: MonsterType = MonsterType.SPARK_HIVE_DAO
 
   override protected var pkgName: String = s"package $basePackage.dal.dao.$bottomPkgName"
 
@@ -42,7 +42,7 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
     * 设置classModel相关字段
     **/
   override def init(): Unit = {
-    val beanClsName = s"${baseClass}Bean"
+    val beanClsName = s"$baseClass${MonsterType.BEAN}"
 
     impPkgs =
       s"""
