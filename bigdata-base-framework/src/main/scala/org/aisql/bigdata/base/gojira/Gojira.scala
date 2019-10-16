@@ -35,10 +35,10 @@ class Gojira(savePath: String,
   private var monsters = allMonsters
 
   def setMonster(engineType: EngineType) = {
-    logger.info(s"set monster type to: $engineType")
+    logger.info(s"set monster engine type to $engineType")
     monsters = if (engineType == EngineType.ALL) allMonsters
     else allMonsters.filter(a => a.monsterType == MonsterType.BEAN || a.monsterType.toString.contains(engineType.toString))
-    logger.info(s"number of monsters: ${monsters.size}")
+    logger.info(s"monsters: ${monsters.map(_.getClass.getSimpleName).mkString(",")}")
   }
 
   private var schema: Seq[(String, String, Seq[(String, String, String)])] = Seq.empty[(String, String, Seq[(String, String, String)])]
