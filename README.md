@@ -86,6 +86,7 @@ mvn package
 使用方式：
 
 ```scala
+import org.aisql.bigdata.base.gojira.Gojira
 import org.aisql.bigdata.base.gojira.enum.EngineType
 
 val savePath = "/Users/xiaohei/Downloads/tmp/test"
