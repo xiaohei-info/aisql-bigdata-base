@@ -1,8 +1,5 @@
 package org.aisql.bigdata.base.gojira.test
 
-import java.sql.Timestamp
-import java.sql.Date
-
 import com.alibaba.fastjson.JSONObject
 
 import scala.beans.BeanProperty

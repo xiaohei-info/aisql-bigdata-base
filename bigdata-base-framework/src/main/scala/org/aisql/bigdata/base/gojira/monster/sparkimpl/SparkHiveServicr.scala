@@ -45,8 +45,7 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor(who
 
     impPkgs =
       s"""
-         |import $frameworkPackage.$implPkg.BaseHiveDao
-         |import $frameworkPackage.$implPkg.$rootClass
+         |import $frameworkPackage.$implPkg.{$rootClass, BaseHiveDao}
          |import $basePackage.dal.bean.$beanClassName
          |import $basePackage.dal.dao.sparkimpl.$daoClassName
 
