@@ -24,6 +24,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
       |import java.sql.Timestamp
       |import java.sql.Date
       |import com.alibaba.fastjson.JSONObject
+      |import scala.beans.BeanProperty
     """.stripMargin
 
   override protected var author: String =
@@ -48,6 +49,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
            |  /**
            |    * $fieldComment
            |    **/
+           |  @BeanProperty
            |  var $fieldName:$fieldType = _
            |  """.stripMargin
     }.mkString("")
