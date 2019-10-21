@@ -11,4 +11,8 @@ object MonsterType extends Enumeration {
   val BEAN = Value("Bean")
   val SPARK_HIVE_DAO = Value("SparkHiveDao")
   val SPARK_HIVE_SERVICE = Value("SparkHiveService")
+  val SPARK_KAFKA_DAO = Value("SparkKafkaDao")
+  val SPARK_KAFKA_SERVICE = Value("SparkKafkaService")
+  val FLINK_KAFKA_DAO = Value("FlinkKafkaDao")
+  val FLINK_KAFKA_SERVICE = Value("FlinkKafkaService")
 }
