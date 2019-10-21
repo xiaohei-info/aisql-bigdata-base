@@ -38,7 +38,7 @@ class SparkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
     beanClassName = s"$baseClass${MonsterType.BEAN}"
     classHeader =
       s"""
-         |class $baseClass$monsterType extends $rootClass[StreamingContext, RDD[${baseClass}Bean]]""".stripMargin
+         |class $baseClass$monsterType extends $rootClass[StreamingContext, DStream[${baseClass}Bean]]""".stripMargin
 
     val daoClassName = s"$baseClass${MonsterType.SPARK_KAFKA_DAO}"
 
@@ -51,7 +51,7 @@ class SparkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
 
     val fields: String =
       s"""
-         |  protected override val dao: BaseHiveDao[SparkSession, RDD[$beanClassName]] = new $daoClassName
+         |  protected override val dao: BaseHiveDao[SparkSession, DStream[$beanClassName]] = new $daoClassName
     """.stripMargin
 
     classModel = new ClassModel(pkgName, classHeader)
