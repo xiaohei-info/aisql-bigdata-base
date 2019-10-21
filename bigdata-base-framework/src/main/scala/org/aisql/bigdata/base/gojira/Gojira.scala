@@ -1,10 +1,11 @@
 package org.aisql.bigdata.base.gojira
 
-import org.aisql.bigdata.base.gojira.monster.sparkimpl.{SparkHiveDaor, SparkHiveServicr}
+import org.aisql.bigdata.base.gojira.monster.sparkimpl.{SparkHiveDaor, SparkHiveServicr, SparkKafkaDaor, SparkKafkaServicr}
 import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
 import org.aisql.bigdata.base.gojira.enum.EngineType.EngineType
 import org.aisql.bigdata.base.gojira.enum.{EngineType, MonsterType}
 import org.aisql.bigdata.base.gojira.model.{FieldMeta, TableSchema}
+import org.aisql.bigdata.base.gojira.monster.flinkimpl.{FlinkKafkaDaor, FlinkKafkaServicr}
 import org.aisql.bigdata.base.java.ZipCompress
 import org.aisql.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
@@ -28,7 +29,11 @@ class Gojira(savePath: String,
   private val allMonsters: Seq[Ancestor] = Seq[Ancestor](
     new Beanr(projectPkgName, whoami),
     new SparkHiveDaor(projectPkgName, whoami),
-    new SparkHiveServicr(projectPkgName, whoami)
+    new SparkHiveServicr(projectPkgName, whoami),
+    new SparkKafkaDaor(projectPkgName, whoami),
+    new SparkKafkaServicr(projectPkgName, whoami),
+    new FlinkKafkaDaor(projectPkgName, whoami),
+    new FlinkKafkaServicr(projectPkgName, whoami)
   )
 
   logger.info("all monsters already init")
