@@ -8,6 +8,39 @@ import org.aisql.bigdata.base.framework.Daoable
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-trait BaseKafkaDao extends Daoable with Serializable {
+trait BaseKafkaDao[E, R] extends Daoable with Serializable {
 
+  /**
+    * 数据库名
+    **/
+  val DATABASE: String
+
+  /**
+    * 表名
+    **/
+  val TABLE: String
+
+  /**
+    * kafka topic
+    **/
+  val TOPIC: String
+
+  /**
+    * kafka 组名
+    **/
+  val GROUP_ID: String
+
+  /**
+    * kafka集群地址
+    **/
+  val BOOTSTRAP_SERVERS: String
+
+  /**
+    * zk集群地址
+    **/
+  val ZK_HOST: String
+
+  def read(implicit env: E): R
+
+  def write(result: R)(implicit env: E): Unit
 }

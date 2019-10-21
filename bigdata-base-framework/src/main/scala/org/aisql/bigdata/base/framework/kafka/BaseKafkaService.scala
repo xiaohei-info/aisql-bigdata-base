@@ -8,6 +8,16 @@ import org.aisql.bigdata.base.framework.Serviceable
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-trait BaseKafkaService  extends Serviceable with Serializable {
+trait BaseKafkaService[E, R] extends Serviceable with Serializable {
 
+  protected val dao: BaseKafkaDao[E, R]
+
+  def select(implicit env: E): R = {
+    dao.read
+  }
+
+  def save(result: R)(implicit env: E): Unit = {
+    dao.write(result)
+  }
 }
+
