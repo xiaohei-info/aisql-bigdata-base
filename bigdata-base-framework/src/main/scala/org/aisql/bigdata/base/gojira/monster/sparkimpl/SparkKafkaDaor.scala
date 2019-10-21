@@ -4,7 +4,7 @@ import org.aisql.bigdata.base.gojira.enum.MonsterType
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
 import org.aisql.bigdata.base.gojira.model.ClassModel
 import org.aisql.bigdata.base.gojira.monster.Ancestor
-import org.aisql.bigdata.base.util.{DateUtil, StringUtil}
+import org.aisql.bigdata.base.util.StringUtil
 
 /**
   * Author: xiaohei
@@ -12,27 +12,23 @@ import org.aisql.bigdata.base.util.{DateUtil, StringUtil}
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-class SparkKafkaDaor(basePackage: String, whoami: String) extends Ancestor {
-
-  logger.info(s"${this.getClass.getSimpleName} init")
-
-  private val bottomPkgName = "sparkimpl"
+class SparkKafkaDaor(basePackage: String, whoami: String) extends Ancestor(whoami) {
 
   override val monsterType: MonsterType = MonsterType.SPARK_KAFKA_DAO
 
-  override protected var pkgName: String = s"package $basePackage.dal.dao.$bottomPkgName"
+  override val rootClass: String = "SparkBaseKafkaDaoImpl"
+
+  override val implPkg: String = "kafka.impl"
+
+  override protected var pkgName: String = s"package $basePackage.dal.dao.sparkimpl"
+
+  override protected var beanClassName: String = _
 
   override protected var impPkgs: String = _
 
-  override protected var author: String =
-    s"""
-       |/**
-       |  * Author: $whoami
-       |  * Date: ${DateUtil.currTime}
-       |  * CreateBy: @${this.getClass.getSimpleName}
-       |  *
-       |  */
-      """.stripMargin
+  override protected var classHeader: String = _
+
+  override protected var classModel: ClassModel = _
 
   /**
     * 类初始化设置
@@ -40,15 +36,19 @@ class SparkKafkaDaor(basePackage: String, whoami: String) extends Ancestor {
     * 设置classModel相关字段
     **/
   override def init(): Unit = {
-    val beanClsName = s"$baseClass${MonsterType.BEAN}"
+    beanClassName = s"$baseClass${MonsterType.BEAN}"
+
+    classHeader =
+      s"""
+         |class $baseClass$monsterType extends $rootClass[${baseClass}Bean]""".stripMargin
 
     impPkgs =
       s"""
          |import com.alibaba.fastjson.JSON
-         |import org.aisql.bigdata.base.framework.kafka.impl.SparkBaseKafkaDaoImpl
          |import org.aisql.bigdata.base.util.JavaJsonUtil
          |import org.apache.spark.streaming.dstream.DStream
-         |import $basePackage.dal.bean.$beanClsName
+         |import $frameworkPackage.$implPkg.$rootClass
+         |import $basePackage.dal.bean.$beanClassName
     """.stripMargin
 
     val varFields: String =
@@ -67,22 +67,19 @@ class SparkKafkaDaor(basePackage: String, whoami: String) extends Ancestor {
 
     val transJson2Bean =
       s"""
-         | override protected def transJson2Bean(jsonStream: DStream[String]): DStream[$beanClsName] = {
-         |    jsonStream.map(x => JSON.parseObject(x, classOf[$beanClsName]))
+         | override protected def transJson2Bean(jsonStream: DStream[String]): DStream[$beanClassName] = {
+         |    jsonStream.map(x => JSON.parseObject(x, classOf[$beanClassName]))
          |  }
       """.stripMargin
 
     val transBean2Json =
       s"""
-         |override protected def transBean2Json(beanStream: DStream[$beanClsName]): DStream[String] = {
+         |override protected def transBean2Json(beanStream: DStream[$beanClassName]): DStream[String] = {
          |    beanStream.map(x => JavaJsonUtil.toJSONString(x))
          |  }
       """.stripMargin
 
-    val clsHeader: String =
-      s"""
-         |class $baseClass$monsterType extends SparkBaseKafkaDaoImpl[${baseClass}Bean]""".stripMargin
-    classModel = new ClassModel(pkgName, clsHeader)
+    classModel = new ClassModel(pkgName, classHeader)
     classModel.setImport(impPkgs)
     classModel.setAuthor(author)
     classModel.setFields(varFields)

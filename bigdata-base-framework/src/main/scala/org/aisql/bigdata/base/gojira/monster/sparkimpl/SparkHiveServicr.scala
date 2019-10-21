@@ -12,27 +12,23 @@ import org.aisql.bigdata.base.util.DateUtil
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor {
-
-  logger.info(s"${this.getClass.getSimpleName} init")
-
-  private val bottomPkgName = "sparkimpl"
+class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor(whoami) {
 
   override val monsterType: MonsterType = MonsterType.SPARK_HIVE_SERVICE
 
-  override protected var pkgName: String = s"package $basePackage.service.$bottomPkgName"
+  override val rootClass: String = "BaseHiveService"
+
+  override val implPkg: String = "hive"
+
+  override protected var pkgName: String = s"package $basePackage.service.sparkimpl"
 
   override protected var impPkgs: String = _
 
-  override protected var author: String =
-    s"""
-       |/**
-       |  * Author: $whoami
-       |  * Date: ${DateUtil.currTime}
-       |  * CreateBy: @${this.getClass.getSimpleName}
-       |  *
-       |  */
-      """.stripMargin
+  override protected var beanClassName: String = _
+
+  override protected var classHeader: String = _
+
+  override protected var classModel: ClassModel = _
 
   /**
     * 类初始化设置
@@ -40,16 +36,19 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor {
     * 设置classModel相关字段
     **/
   override def init(): Unit = {
+    beanClassName = s"$baseClass${MonsterType.BEAN}"
+    classHeader =
+      s"""
+         |class $baseClass$monsterType extends $rootClass[SparkSession, RDD[${baseClass}Bean]]""".stripMargin
 
-    val beanClsName = s"$baseClass${MonsterType.BEAN}"
-    val daoClsName = s"$baseClass${MonsterType.SPARK_HIVE_DAO}"
+    val daoClassName = s"$baseClass${MonsterType.SPARK_HIVE_DAO}"
 
     impPkgs =
       s"""
-         |import $frameworkPackage.hive.BaseHiveDao
-         |import $frameworkPackage.hive.BaseHiveService
-         |import $basePackage.dal.bean.$beanClsName
-         |import $basePackage.dal.dao.$bottomPkgName.$daoClsName
+         |import $frameworkPackage.$implPkg.BaseHiveDao
+         |import $frameworkPackage.$implPkg.$rootClass
+         |import $basePackage.dal.bean.$beanClassName
+         |import $basePackage.dal.dao.sparkimpl.$daoClassName
 
          |import org.apache.spark.rdd.RDD
          |import org.apache.spark.sql.SparkSession
@@ -57,21 +56,16 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor {
 
     val fields: String =
       s"""
-         |  protected override val dao: BaseHiveDao[SparkSession, RDD[$beanClsName]] = new $daoClsName
+         |  protected override val dao: BaseHiveDao[SparkSession, RDD[$beanClassName]] = new $daoClassName
     """.stripMargin
 
-    classModel = initClassModel
+
+    classModel = new ClassModel(pkgName, classHeader)
     classModel.setImport(impPkgs)
     classModel.setAuthor(author)
     classModel.setFields(fields)
     logger.info(s"$monsterType class model done")
   }
 
-  private def initClassModel: ClassModel = {
-    val clsHeader: String =
-      s"""
-         |class $baseClass$monsterType extends BaseHiveService[SparkSession, RDD[${baseClass}Bean]]""".stripMargin
-    new ClassModel(pkgName, clsHeader)
-  }
 
 }

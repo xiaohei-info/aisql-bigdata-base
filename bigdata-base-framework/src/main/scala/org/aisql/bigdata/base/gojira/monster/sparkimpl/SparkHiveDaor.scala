@@ -12,28 +12,23 @@ import org.aisql.bigdata.base.util.{DateUtil, StringUtil}
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
-
-  logger.info(s"${this.getClass.getSimpleName} init")
-
-  private val bottomPkgName = "sparkimpl"
+class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor(whoami) {
 
   override val monsterType: MonsterType = MonsterType.SPARK_HIVE_DAO
 
-  override protected var pkgName: String = s"package $basePackage.dal.dao.$bottomPkgName"
+  override val rootClass: String = "SparkBaseHiveDaoImpl"
+
+  override val implPkg: String = "hive.impl"
+
+  override protected var pkgName: String = s"package $basePackage.dal.dao.sparkimpl"
 
   override protected var impPkgs: String = _
 
-  override protected var author: String =
-    s"""
-       |/**
-       |  * Author: $whoami
-       |  * Date: ${DateUtil.currTime}
-       |  * CreateBy: @${this.getClass.getSimpleName}
-       |  *
-       |  */
-      """.stripMargin
+  override protected var beanClassName: String = _
 
+  override protected var classHeader: String = _
+
+  override protected var classModel: ClassModel = _
 
   /**
     * 类初始化设置
@@ -42,17 +37,21 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
     * 设置classModel相关字段
     **/
   override def init(): Unit = {
-    val beanClsName = s"$baseClass${MonsterType.BEAN}"
+    beanClassName= s"$baseClass${MonsterType.BEAN}"
 
     impPkgs =
       s"""
          |import java.sql.Timestamp
          |import org.apache.spark.rdd.RDD
          |import org.apache.spark.sql.{SparkSession, _}
-         |import org.aisql.bigdata.base.framework.util.DataFrameReflactUtil
-         |import org.aisql.bigdata.base.framework.hive.impl.SparkBaseHiveDaoImpl
-         |import $basePackage.dal.bean.$beanClsName
+         |import $frameworkPackage.util.DataFrameReflactUtil
+         |import $frameworkPackage.$implPkg.$rootClass
+         |import $basePackage.dal.bean.$beanClassName
     """.stripMargin
+
+    classHeader =
+      s"""
+         |class $baseClass$monsterType extends $rootClass[${baseClass}Bean]""".stripMargin
 
     val valFields: String =
       """
@@ -74,10 +73,10 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
          |    * @param df Row对象
          |    * @return 具体的bean对象
          |    **/
-         |  override protected def transDf2Rdd(df: DataFrame)(implicit env: SparkSession): RDD[$beanClsName] = {
+         |  override protected def transDf2Rdd(df: DataFrame)(implicit env: SparkSession): RDD[$beanClassName] = {
          |    df.rdd.map {
          |      row =>
-         |        DataFrameReflactUtil.generatePojoValue(classOf[$beanClsName], row).asInstanceOf[$beanClsName]
+         |        DataFrameReflactUtil.generatePojoValue(classOf[$beanClassName], row).asInstanceOf[$beanClassName]
          |    }
          |  }
     """.stripMargin
@@ -90,14 +89,14 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
          |    * @param rdd rdd对象
          |    * @return DataFrame对象
          |    **/
-         |  override protected def transRdd2Df(rdd: RDD[$beanClsName])(implicit env: SparkSession): DataFrame = {
-         |    val structs = DataFrameReflactUtil.getStructType(classOf[$beanClsName]).get
-         |    val rowRdd = rdd.flatMap(r => DataFrameReflactUtil.generateRowValue(classOf[$beanClsName], r))
+         |  override protected def transRdd2Df(rdd: RDD[$beanClassName])(implicit env: SparkSession): DataFrame = {
+         |    val structs = DataFrameReflactUtil.getStructType(classOf[$beanClassName]).get
+         |    val rowRdd = rdd.flatMap(r => DataFrameReflactUtil.generateRowValue(classOf[$beanClassName], r))
          |    env.createDataFrame(rowRdd, structs)
          |  }
     """.stripMargin
 
-    classModel = initClassModel
+    classModel = new ClassModel(pkgName, classHeader)
     classModel.setImport(impPkgs)
     classModel.setAuthor(author)
     classModel.setFields(varFields)
@@ -106,14 +105,4 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor {
     classModel.setMethods(transRdd2Df)
     logger.info(s"$monsterType class model done")
   }
-
-  private def initClassModel: ClassModel = {
-    //todo: SparkBaseHiveDaoImpl 名称需要与 org.aisql.bigdata.base.framework.hive.impl.SparkBaseHiveDaoImpl 保持一致
-    val clsHeader: String =
-      s"""
-         |class $baseClass$monsterType extends SparkBaseHiveDaoImpl[${baseClass}Bean]""".stripMargin
-    new ClassModel(pkgName, clsHeader)
-  }
-
-
 }
