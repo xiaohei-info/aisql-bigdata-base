@@ -114,6 +114,6 @@ object StringUtil {
   }
 
   def camel2under(origin: String) = {
-    origin.replaceAll("([a-z])([A-Z])", "$1" + underSeparator + "$2").toLowerCase()
+    origin.replaceAll("([0-9a-zA-Z])([A-Z])", "$1" + underSeparator + "$2").toLowerCase()
   }
 }
