@@ -45,6 +45,7 @@ class FlinkKafkaDaor(basePackage: String, whoami: String) extends Ancestor(whoam
 
     impPkgs =
       s"""
+         |import org.apache.flink.api.scala._
          |import com.alibaba.fastjson.JSON
          |import org.aisql.bigdata.base.util.JavaJsonUtil
          |import org.apache.flink.streaming.api.scala.DataStream

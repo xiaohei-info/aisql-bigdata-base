@@ -50,15 +50,15 @@ class Gojira(savePath: String,
   private var schema: Seq[TableSchema] = Seq.empty[TableSchema]
 
   def setTable(tableNames: Seq[String], spark: SparkSession) = {
-    logger.info("set table connect to hive and init schemas")
+    println("set table connect to hive and init schemas")
     schema = tableNames.map {
       tableName =>
         val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
         val fieldMeta: Seq[FieldMeta] = HiveUtil.getScheme(spark, tableName).map(x => FieldMeta(x._1, x._2, x._3))
-        logger.info(s"HiveUtil.getScheme --> $baseClass get ${fieldMeta.size} fields")
+        println(s"HiveUtil.getScheme --> $baseClass get ${fieldMeta.size} fields")
         TableSchema(tableName, baseClass, fieldMeta)
     }
-    logger.info("schemas init finished")
+    println("schemas init finished")
   }
 
   def setSchema(tablesSchema: Seq[TableSchema]) = {

@@ -2,6 +2,7 @@ package org.aisql.bigdata.base.gojira
 
 import org.aisql.bigdata.base.gojira.enum.EngineType
 import org.aisql.bigdata.base.gojira.model.{FieldMeta, TableSchema}
+import org.aisql.bigdata.base.util.StringUtil
 
 /**
   * Author: xiaohei
@@ -68,7 +69,7 @@ object Test {
       ("pk_day", "String", "")
     ).map(x => FieldMeta(x._1, x._2, x._3))
     val tableName = "xy_jiangyuande.fi_gw_agrt_express_order_encrypt_test"
-    val baseClass: String = "FiGwAgrtExpressOrderEncryptTest"
+    val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
     val whoami = "xiaohei"
 
     val gojira = new Gojira(
