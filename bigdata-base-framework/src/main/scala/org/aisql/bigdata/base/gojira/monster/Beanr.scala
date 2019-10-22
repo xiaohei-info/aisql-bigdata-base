@@ -11,31 +11,23 @@ import org.aisql.bigdata.base.util.DateUtil
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-class Beanr(basePackage: String, whoami: String) extends Ancestor {
-
-  logger.info(s"${this.getClass.getSimpleName} init")
+class Beanr(basePackage: String, whoami: String) extends Ancestor(whoami) {
 
   override val monsterType: MonsterType = MonsterType.BEAN
 
+  override val rootClass: String = ""
+
+  override val implPkg: String = ""
+
+  override protected var beanClassName: String = _
+
+  override protected var classHeader: String = _
+
+  override protected var classModel: ClassModel = _
+
   override protected var pkgName = s"package $basePackage.dal.bean"
 
-  override protected var impPkgs: String =
-    """
-      |import java.sql.Timestamp
-      |import java.sql.Date
-      |import com.alibaba.fastjson.JSONObject
-      |import scala.beans.BeanProperty
-    """.stripMargin
-
-  override protected var author: String =
-    s"""
-       |/**
-       |  * Author: $whoami
-       |  * Date: ${DateUtil.currTime}
-       |  * CreateBy: @${this.getClass.getSimpleName}
-       |  *
-       |  */
-      """.stripMargin
+  override protected var impPkgs: String = _
 
   /**
     * 类初始化设置
@@ -43,6 +35,23 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
     * 设置classModel相关字段
     **/
   override def init(): Unit = {
+    beanClassName = s"$baseClass${MonsterType.BEAN}"
+
+    impPkgs =
+      """
+        |import java.sql.Timestamp
+        |import java.sql.Date
+        |import com.alibaba.fastjson.JSONObject
+        |import scala.beans.BeanProperty
+      """.stripMargin
+
+    //最后行不可换行,保持 class{ 风格的代码
+    classHeader =
+      s"""
+         |class $baseClass$monsterType extends Serializable""".stripMargin
+
+    classModel = new ClassModel(pkgName, classHeader)
+
     val fields = fieldMeta.map {
       case FieldMeta(fieldName, fieldType, fieldComment) =>
         s"""
@@ -78,7 +87,6 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
          |  }
      """.stripMargin
 
-    classModel = initClassModel
     classModel.setImport(impPkgs)
     classModel.setAuthor(author)
     classModel.setFields(fields)
@@ -86,14 +94,5 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor {
     classModel.setMethods(toJSONStringStr)
     logger.info(s"$monsterType class model done")
   }
-
-  private def initClassModel: ClassModel = {
-    //最后行不可换行,保持 class{ 风格的代码
-    val classHeader =
-      s"""
-         |class $baseClass$monsterType extends Serializable""".stripMargin
-    new ClassModel(pkgName, classHeader)
-  }
-
 
 }
