@@ -45,12 +45,14 @@ class FlinkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
     impPkgs =
       s"""
          |import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-         |$frameworkPackage.$implPkg.{$rootClass, BaseKafkaDao}
+         |import $frameworkPackage.$implPkg.{$rootClass, BaseKafkaDao}
+         |import $basePackage.dal.bean.$beanClassName
+         |import $basePackage.dal.dao.flinkimpl.$daoClassName
       """.stripMargin
 
     val fields: String =
       s"""
-         |  protected override val dao: BaseHiveDao[StreamExecutionEnvironment, DataStream[$beanClassName]] = new $daoClassName
+         |  protected override val dao: BaseKafkaDao[StreamExecutionEnvironment, DataStream[$beanClassName]] = new $daoClassName
     """.stripMargin
 
     classModel = new ClassModel(pkgName, classHeader)

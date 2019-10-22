@@ -78,7 +78,7 @@ object Test {
       whoami
     )
 
-    gojira.setMonster(EngineType.SPARK)
+    gojira.setMonster(EngineType.ALL)
     gojira.setSchema(Seq(TableSchema(tableName, baseClass, fieldMeta)))
 
     gojira.save()

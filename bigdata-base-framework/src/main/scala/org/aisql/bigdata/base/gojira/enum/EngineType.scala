@@ -8,7 +8,7 @@ package org.aisql.bigdata.base.gojira.enum
   */
 object EngineType extends Enumeration {
   type EngineType = Value
-  val ALL=Value("All")
+  val ALL = Value("All")
   val SPARK = Value("Spark")
   val Flink = Value("Flink")
 }

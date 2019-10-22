@@ -46,12 +46,14 @@ class SparkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
       s"""
          |import org.apache.spark.streaming.StreamingContext
          |import org.apache.spark.streaming.dstream.DStream
-         |$frameworkPackage.$implPkg.{$rootClass, BaseKafkaDao}
+         |import $frameworkPackage.$implPkg.{$rootClass, BaseKafkaDao}
+         |import $basePackage.dal.bean.$beanClassName
+         |import $basePackage.dal.dao.sparkimpl.$daoClassName
       """.stripMargin
 
     val fields: String =
       s"""
-         |  protected override val dao: BaseHiveDao[SparkSession, DStream[$beanClassName]] = new $daoClassName
+         |  protected override val dao: BaseKafkaDao[StreamingContext, DStream[$beanClassName]] = new $daoClassName
     """.stripMargin
 
     classModel = new ClassModel(pkgName, classHeader)
