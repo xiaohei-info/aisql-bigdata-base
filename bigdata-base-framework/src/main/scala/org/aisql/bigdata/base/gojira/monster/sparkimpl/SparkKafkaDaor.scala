@@ -61,8 +61,8 @@ class SparkKafkaDaor(basePackage: String, whoami: String) extends Ancestor(whoam
       """
         |  override val GROUP_ID: String = s"$DATABASE-$TABLE"
         |  override val TOPIC: String = s"$DATABASE-$TABLE"
-        |  override val BOOTSTRAP_SERVERS: String = _
-        |  override val ZK_HOST: String = _
+        |  override val BOOTSTRAP_SERVERS: String = ""
+        |  override val ZK_HOST: String = ""
       """.stripMargin
 
     val transJson2Bean =
