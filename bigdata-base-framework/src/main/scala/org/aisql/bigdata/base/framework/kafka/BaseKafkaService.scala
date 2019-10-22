@@ -16,7 +16,7 @@ trait BaseKafkaService[E, R] extends Serviceable with Serializable {
     dao.readStream
   }
 
-  def save(result: R)(implicit env: E): Unit = {
+  def insert(result: R)(implicit env: E): Unit = {
     dao.writeStream(result)
   }
 }
