@@ -24,7 +24,7 @@ trait SparkBaseKafkaDaoImpl[B] extends BaseKafkaDao[StreamingContext, DStream[B]
 
   protected def transBean2Json(beanStream: DStream[B]): DStream[String]
 
-  override def read(implicit env: StreamingContext): DStream[B] = {
+  override def readStream(implicit env: StreamingContext): DStream[B] = {
     val kafkaParams: Map[String, Object] = Map[String, Object](
       "bootstrap.servers" -> BOOTSTRAP_SERVERS,
       "key.deserializer" -> classOf[StringDeserializer],
@@ -42,8 +42,8 @@ trait SparkBaseKafkaDaoImpl[B] extends BaseKafkaDao[StreamingContext, DStream[B]
     transJson2Bean(jsonStream)
   }
 
-  override def write(result: DStream[B])
-                    (implicit env: StreamingContext): Unit = {
+  override def writeStream(result: DStream[B])
+                          (implicit env: StreamingContext): Unit = {
     val kafkaProducer: Broadcast[KafkaSink[String, String]] = {
       val kafkaProducerConfig = {
         val p = new Properties()

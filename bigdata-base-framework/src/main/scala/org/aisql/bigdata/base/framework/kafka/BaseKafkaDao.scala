@@ -40,7 +40,7 @@ trait BaseKafkaDao[E, R] extends Daoable with Serializable {
     **/
   val ZK_HOST: String
 
-  def read(implicit env: E): R
+  def readStream(implicit env: E): R
 
-  def write(result: R)(implicit env: E): Unit
+  def writeStream(result: R)(implicit env: E): Unit
 }

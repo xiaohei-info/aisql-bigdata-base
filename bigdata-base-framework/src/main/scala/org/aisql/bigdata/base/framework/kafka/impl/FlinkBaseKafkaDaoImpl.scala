@@ -19,7 +19,7 @@ trait FlinkBaseKafkaDaoImpl[B] extends BaseKafkaDao[StreamExecutionEnvironment, 
 
   protected def transBean2Json(beanStream: DataStream[B]): DataStream[String]
 
-  override def read(implicit env: StreamExecutionEnvironment): DataStream[B] = {
+  override def readStream(implicit env: StreamExecutionEnvironment): DataStream[B] = {
     val properties = new Properties()
     properties.setProperty("bootstrap.servers", BOOTSTRAP_SERVERS)
     properties.setProperty("group.id", GROUP_ID)
@@ -30,8 +30,8 @@ trait FlinkBaseKafkaDaoImpl[B] extends BaseKafkaDao[StreamExecutionEnvironment, 
     transJson2Bean(jsonStream)
   }
 
-  override def write(result: DataStream[B])
-                    (implicit env: StreamExecutionEnvironment): Unit = {
+  override def writeStream(result: DataStream[B])
+                          (implicit env: StreamExecutionEnvironment): Unit = {
     val producer = new FlinkKafkaProducer[String](BOOTSTRAP_SERVERS, GROUP_ID, new SimpleStringSchema)
     producer.setWriteTimestampToKafka(true)
     transBean2Json(result).addSink(producer)

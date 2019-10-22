@@ -13,11 +13,11 @@ trait BaseKafkaService[E, R] extends Serviceable with Serializable {
   protected val dao: BaseKafkaDao[E, R]
 
   def select(implicit env: E): R = {
-    dao.read
+    dao.readStream
   }
 
   def save(result: R)(implicit env: E): Unit = {
-    dao.write(result)
+    dao.writeStream(result)
   }
 }
 
