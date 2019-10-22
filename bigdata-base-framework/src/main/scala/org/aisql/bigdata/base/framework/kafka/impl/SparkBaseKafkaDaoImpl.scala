@@ -34,6 +34,10 @@ trait SparkBaseKafkaDaoImpl[B] extends BaseKafkaDao[StreamingContext, DStream[B]
       "enable.auto.commit" -> (true: java.lang.Boolean)
     )
 
+    println("kafka params:")
+    kafkaParams.foreach(k => println(s"${k._1}:${k._2}"))
+    println(s"topic:$TOPIC")
+
     val jsonStream = KafkaUtils.createDirectStream[String, String](
       env,
       PreferConsistent,
@@ -44,16 +48,22 @@ trait SparkBaseKafkaDaoImpl[B] extends BaseKafkaDao[StreamingContext, DStream[B]
 
   override def writeStream(result: DStream[B])
                           (implicit env: StreamingContext): Unit = {
+
+    println("init kafka producer")
+
     val kafkaProducer: Broadcast[KafkaSink[String, String]] = {
       val kafkaProducerConfig = {
         val p = new Properties()
-        p.setProperty("bootstrap.servers", ZK_HOST)
+        p.setProperty("bootstrap.servers", BOOTSTRAP_SERVERS)
         p.put("key.serializer", classOf[StringSerializer])
         p.put("value.serializer", classOf[StringSerializer])
         p
       }
       env.sparkContext.broadcast(KafkaSink[String, String](kafkaProducerConfig))
     }
+
+    println(s"write to : $BOOTSTRAP_SERVERS, topic: $TOPIC")
+
     val stream = transBean2Json(result)
     stream.foreachRDD {
       rdd =>
