@@ -59,7 +59,7 @@ class Beanr(basePackage: String, whoami: String) extends Ancestor(whoami) {
            |    * $fieldComment
            |    **/
            |  @BeanProperty
-           |  var $fieldName:$fieldType = _
+           |  var $fieldName: $fieldType = _
            |  """.stripMargin
     }.mkString("")
 
