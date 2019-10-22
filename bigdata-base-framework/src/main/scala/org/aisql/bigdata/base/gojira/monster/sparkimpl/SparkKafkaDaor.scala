@@ -67,14 +67,14 @@ class SparkKafkaDaor(basePackage: String, whoami: String) extends Ancestor(whoam
 
     val transJson2Bean =
       s"""
-         | override protected def transJson2Bean(jsonStream: DStream[String]): DStream[$beanClassName] = {
+         |  override protected def transJson2Bean(jsonStream: DStream[String]): DStream[$beanClassName] = {
          |    jsonStream.map(x => JSON.parseObject(x, classOf[$beanClassName]))
          |  }
       """.stripMargin
 
     val transBean2Json =
       s"""
-         |override protected def transBean2Json(beanStream: DStream[$beanClassName]): DStream[String] = {
+         |  override protected def transBean2Json(beanStream: DStream[$beanClassName]): DStream[String] = {
          |    beanStream.map(x => JavaJsonUtil.toJSONString(x))
          |  }
       """.stripMargin

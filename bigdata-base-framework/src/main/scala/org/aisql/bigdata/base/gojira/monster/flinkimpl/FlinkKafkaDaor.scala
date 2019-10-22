@@ -69,14 +69,14 @@ class FlinkKafkaDaor(basePackage: String, whoami: String) extends Ancestor(whoam
 
     val transJson2Bean =
       s"""
-         |override protected def transJson2Bean(jsonStream: DataStream[String]): DataStream[$beanClassName] = {
+         |  override protected def transJson2Bean(jsonStream: DataStream[String]): DataStream[$beanClassName] = {
          |    jsonStream.map(x => JSON.parseObject(x, classOf[$beanClassName]))
          |  }
       """.stripMargin
 
     val transBean2Json =
       s"""
-         |override protected def transBean2Json(beanStream: DataStream[$beanClassName]): DataStream[String] = {
+         |  override protected def transBean2Json(beanStream: DataStream[$beanClassName]): DataStream[String] = {
          |    beanStream.map(x => JavaJsonUtil.toJSONString(x))
          |  }
       """.stripMargin
