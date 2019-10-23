@@ -35,11 +35,6 @@ trait BaseKafkaDao[E, R] extends Daoable with Serializable {
     **/
   val BOOTSTRAP_SERVERS: String
 
-  /**
-    * zk集群地址
-    **/
-  val ZK_HOST: String
-
   def readStream(implicit env: E): R
 
   def writeStream(result: R)(implicit env: E): Unit
