@@ -127,6 +127,37 @@ object DataFrameReflactUtil {
     }
   }
 
+
+  /**
+    * 根据Class类型与arr数组,创建对应的Bean对象并赋值
+    * 数组中字段的顺序必须与Bean定义的字段顺序一致
+    *
+    * @param clazz 对象类型
+    * @param arr   字段数据数组
+    * @return 对应的对象
+    *
+    **/
+  def generatePojoValue(clazz: Class[_], arr: Array[String]): Any = {
+    val bean = clazz.newInstance()
+    val fields = getUsefulFields(clazz).map(f => (f.getName, f)).toMap
+    var index = 0
+    fields.foreach {
+      case (n, f) =>
+        f.setAccessible(true)
+        f.set(bean, arr(index))
+        index += 1
+    }
+    bean
+  }
+
+  /**
+    * 根据Class类型与Row独享,创建对应的Bean对象并赋值
+    *
+    * @param clazz 对象类型
+    * @param row   Row对象
+    * @return 对应的对象
+    *
+    **/
   def generatePojoValue(clazz: Class[_], row: Row): Any = {
     val bean = clazz.newInstance()
     val fields = getUsefulFields(clazz).map(f => (f.getName, f)).toMap
