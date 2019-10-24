@@ -3,7 +3,7 @@ package org.aisql.bigdata.base.framework.kafka.impl
 import com.alibaba.fastjson.JSON
 import org.aisql.bigdata.base.framework.bean.MaxwellBean
 import org.aisql.bigdata.base.util.JavaJsonUtil
-import org.apache.flink.streaming.api.scala._
+import org.apache.spark.streaming.dstream.DStream
 
 /**
   * Author: xiaohei
@@ -11,13 +11,13 @@ import org.apache.flink.streaming.api.scala._
   * Email: xiaohei.info@gmail.com
   * Host: xiaohei.info
   */
-abstract class MaxwellFlinkKafkaDao extends FlinkBaseKafkaDaoImpl[MaxwellBean] {
+abstract class SparkMaxwellKafkaDaoImpl extends SparkBaseKafkaDaoImpl[MaxwellBean] {
 
-  override protected def transJson2Bean(jsonStream: DataStream[String]): DataStream[MaxwellBean] = {
+  override protected def transJson2Bean(jsonStream: DStream[String]): DStream[MaxwellBean] = {
     jsonStream.map(x => JSON.parseObject(x, classOf[MaxwellBean]))
   }
 
-  override protected def transBean2Json(beanStream: DataStream[MaxwellBean]): DataStream[String] = {
+  override protected def transBean2Json(beanStream: DStream[MaxwellBean]): DStream[String] = {
     beanStream.map(x => JavaJsonUtil.toJSONString(x))
   }
 
