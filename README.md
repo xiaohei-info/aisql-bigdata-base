@@ -113,6 +113,7 @@ gojira.save()
 现有 default.t_users 表需要读取，代码如下：
 
 ```scala
+implicit val env:SparkSession = spark
 val service = new UsersService
 //读取整个表
 val allRdd:RDD[Users] = service.selectAll()
@@ -122,6 +123,8 @@ val allRdd:RDD[Users] = service.selectAllWithCols(Seq("name","age"))
 val allRdd:RDD[Users] = service.selectAllByWhere("age>10")
 //读取1000条数据
 val demoRdd:RDD[Users] = service.selectDemo()
+//读取hdfs上的文本文件
+val fromTextBean:RDD[Users] = service.fromTextFile(",")
 //写入表
 service.insertInto(demoRDD)
 service.createTable(demoRDD)
@@ -176,6 +179,16 @@ class UsersDao extends SparkBaseHiveDaoImpl[Users] {
      override protected def transRdd2Df(rdd: RDD[Users])(implicit env: SparkSession): DataFrame = {
 
      }
+
+    /**
+       * 读取hdfs text文件时,将文本数据(数组)转化为具体的bean对象
+       *
+       * @param arrRdd 使用分隔符split之后的数据数组
+       * @return 具体的bean对象
+       **/
+     override protected def transText2Bean(arrRdd: RDD[Array[String]]): RDD[Users] = {
+
+     }
 }
 ```
 
@@ -199,6 +212,10 @@ override protected def transRdd2Df(rdd: RDD[Users])(implicit env: SparkSession):
     //反射创建row对象，并从pojo中读取字段内容与类型设置到row对象中
     val rowRdd = rdd.flatMap(r => DataFrameReflactUtil.generateRowValue(classOf[Users], r))
     env.createDataFrame(rowRdd, structs)
+}
+
+override protected def transText2Bean(arrRdd: RDD[Array[String]]): RDD[Users] = {
+  arrRdd.map(r => DataFrameReflactUtil.generatePojoValue(classOf[Users], r).asInstanceOf[Users])
 }
 ```
 
