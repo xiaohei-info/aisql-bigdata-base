@@ -116,6 +116,16 @@ trait BaseHiveService[E, R] extends Serviceable with Serializable {
   }
 
   /**
+    * 从hdfs中读取数据
+    *
+    * @param sperator 文本分隔符
+    * @return 不同引擎的读取结果,如spark的rdd
+    **/
+  def fromTextFile(sperator: String)(implicit env: E): R = {
+    dao.fromText(sperator)
+  }
+
+  /**
     * 将不同引擎的计算结果写为hive分区表,如spark的rdd
     *
     * @param partitionKeys 分区字段列表,如果为空则不分区
@@ -151,6 +161,13 @@ trait BaseHiveService[E, R] extends Serviceable with Serializable {
     **/
   def insertInto(result: R)(implicit env: E): Unit = {
     dao.insertInto(isOverwrite = false, result)
+  }
+
+  /**
+    * 写入hdfs文本文件
+    **/
+  def saveAsTextFile(result: R)(implicit env: E): Unit = {
+    dao.saveAsTextFile(result)
   }
 
 }

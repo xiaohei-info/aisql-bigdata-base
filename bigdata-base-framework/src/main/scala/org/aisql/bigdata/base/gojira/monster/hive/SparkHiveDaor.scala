@@ -37,7 +37,7 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor(whoami
     * 设置classModel相关字段
     **/
   override def init(): Unit = {
-    beanClassName= s"$baseClass${MonsterType.BEAN}"
+    beanClassName = s"$baseClass${MonsterType.BEAN}"
 
     impPkgs =
       s"""
@@ -96,6 +96,19 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor(whoami
          |  }
     """.stripMargin
 
+    val transText2Bean: String =
+      s"""
+        | /**
+        |    * 读取hdfs text文件时,将文本数据(数组)转化为具体的bean对象
+        |    *
+        |    * @param textArr 使用分隔符split之后的数据数组
+        |    * @return 具体的bean对象
+        |    **/
+        |  override protected def transText2Bean(text: Array[String]): $beanClassName = {
+        |    DataFrameReflactUtil.generatePojoValue(classOf[$beanClassName], text).asInstanceOf[$beanClassName]
+        |  }
+      """.stripMargin
+
     classModel = new ClassModel(pkgName, classHeader)
     classModel.setImport(impPkgs)
     classModel.setAuthor(author)
@@ -103,6 +116,7 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor(whoami
     classModel.setFields(valFields)
     classModel.setMethods(transDf2Rdd)
     classModel.setMethods(transRdd2Df)
+    classModel.setMethods(transText2Bean)
     logger.info(s"$monsterType class model done")
   }
 }

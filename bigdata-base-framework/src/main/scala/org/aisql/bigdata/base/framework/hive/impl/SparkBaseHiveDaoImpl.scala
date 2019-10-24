@@ -42,6 +42,17 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   }
 
   /**
+    * 从hdfs读取文本文件
+    *
+    * @param sperator 文本分隔符
+    * @return 不同引擎的读取结果,如spark的rdd
+    **/
+  override def fromText(sperator: String)(implicit env: SparkSession): RDD[B] = {
+    val rdd = env.sparkContext.textFile(HDFS_PATH).map(_.split(sperator))
+    rdd.map(transText2Bean)
+  }
+
+  /**
     * 将不同引擎的计算结果写为hive表,如spark的rdd
     *
     * @param partitionKeys 分区字段列表,如果为空则不分区
@@ -94,6 +105,13 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   }
 
   /**
+    * 将不同引擎的计算结果写入hdfs路径中,如spark的rdd
+    **/
+  override def saveAsTextFile(result: RDD[B])(implicit env: SparkSession): Unit = {
+    result.map(_.toString).saveAsTextFile(HDFS_PATH)
+  }
+
+  /**
     * 读取hive数据时,将DadaFrame的Row转化为具体的bean对象
     *
     * @param df Row对象
@@ -111,6 +129,14 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   protected def transRdd2Df(rdd: RDD[B])
                            (implicit env: SparkSession): DataFrame
 
+  /**
+    * 读取hdfs text文件时,将文本数据(数组)转化为具体的bean对象
+    *
+    * @param textArr 使用分隔符split之后的数据数组
+    * @return 具体的bean对象
+    **/
+  protected def transText2Bean(textArr: Array[String]): B
+
 
   /**
     * 读取指定数据表(hive or tmpview)
@@ -125,5 +151,4 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
     println(s"exec sql: $sql")
     transDf2Rdd(env.sql(sql))
   }
-
 }

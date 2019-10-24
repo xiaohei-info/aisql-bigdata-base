@@ -60,6 +60,14 @@ trait BaseHiveDao[E, R] extends Daoable with Serializable {
                  (implicit env: E): R
 
   /**
+    * 从hdfs读取文本文件
+    *
+    * @param sperator 文本分隔符
+    * @return 不同引擎的读取结果,如spark的rdd
+    **/
+  def fromText(sperator: String)(implicit env: E): R
+
+  /**
     * 将不同引擎的计算结果写为hive表,如spark的rdd
     *
     * @param partitionKeys 分区字段列表,如果为空则不分区
@@ -82,6 +90,11 @@ trait BaseHiveDao[E, R] extends Daoable with Serializable {
     **/
   def writeParquet(partitionKeys: Seq[String] = Seq.empty, result: R)
                   (implicit env: E): Unit
+
+  /**
+    * 将不同引擎的计算结果写入hdfs路径中,如spark的rdd
+    * */
+  def saveAsTextFile(result: R)(implicit env: E): Unit
 
 
 }
