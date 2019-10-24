@@ -122,7 +122,7 @@ trait BaseHiveService[E, R] extends Serviceable with Serializable {
     * @return 不同引擎的读取结果,如spark的rdd
     **/
   def fromTextFile(sperator: String)(implicit env: E): R = {
-    dao.fromText(sperator)
+    dao.fromTextFile(sperator)
   }
 
   /**

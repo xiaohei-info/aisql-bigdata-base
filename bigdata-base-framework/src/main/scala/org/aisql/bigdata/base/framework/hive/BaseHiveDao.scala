@@ -65,7 +65,7 @@ trait BaseHiveDao[E, R] extends Daoable with Serializable {
     * @param sperator 文本分隔符
     * @return 不同引擎的读取结果,如spark的rdd
     **/
-  def fromText(sperator: String)(implicit env: E): R
+  def fromTextFile(sperator: String)(implicit env: E): R
 
   /**
     * 将不同引擎的计算结果写为hive表,如spark的rdd

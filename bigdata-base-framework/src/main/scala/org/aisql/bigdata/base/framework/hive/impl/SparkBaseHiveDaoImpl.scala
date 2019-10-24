@@ -47,7 +47,7 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
     * @param sperator 文本分隔符
     * @return 不同引擎的读取结果,如spark的rdd
     **/
-  override def fromText(sperator: String)(implicit env: SparkSession): RDD[B] = {
+  override def fromTextFile(sperator: String)(implicit env: SparkSession): RDD[B] = {
     val rdd = env.sparkContext.textFile(HDFS_PATH).map(_.split(sperator))
     transText2Bean(rdd)
   }
