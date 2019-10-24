@@ -1,4 +1,4 @@
-package org.aisql.bigdata.base.gojira.monster.sparkimpl
+package org.aisql.bigdata.base.gojira.monster.kafka
 
 import org.aisql.bigdata.base.gojira.enum.MonsterType
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
@@ -19,7 +19,7 @@ class SparkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
 
   override val implPkg: String = "kafka"
 
-  override protected var pkgName: String = s"package $basePackage.service.sparkimpl"
+  override protected var pkgName: String = s"package $basePackage.service.kafka.sparkimpl"
 
   override protected var beanClassName: String = _
 
@@ -48,7 +48,7 @@ class SparkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
          |import org.apache.spark.streaming.dstream.DStream
          |import $frameworkPackage.$implPkg.{$rootClass, BaseKafkaDao}
          |import $basePackage.dal.bean.$beanClassName
-         |import $basePackage.dal.dao.sparkimpl.$daoClassName
+         |import $basePackage.dal.dao.kafka.sparkimpl.$daoClassName
       """.stripMargin
 
     val fields: String =

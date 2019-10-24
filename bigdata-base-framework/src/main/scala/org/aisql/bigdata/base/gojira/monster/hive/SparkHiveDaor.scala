@@ -1,10 +1,10 @@
-package org.aisql.bigdata.base.gojira.monster.sparkimpl
+package org.aisql.bigdata.base.gojira.monster.hive
 
-import org.aisql.bigdata.base.gojira.monster.Ancestor
 import org.aisql.bigdata.base.gojira.enum.MonsterType
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
 import org.aisql.bigdata.base.gojira.model.ClassModel
-import org.aisql.bigdata.base.util.{DateUtil, StringUtil}
+import org.aisql.bigdata.base.gojira.monster.Ancestor
+import org.aisql.bigdata.base.util.StringUtil
 
 /**
   * Author: xiaohei
@@ -20,7 +20,7 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor(whoami
 
   override val implPkg: String = "hive.impl"
 
-  override protected var pkgName: String = s"package $basePackage.dal.dao.sparkimpl"
+  override protected var pkgName: String = s"package $basePackage.dal.dao.hive.sparkimpl"
 
   override protected var impPkgs: String = _
 

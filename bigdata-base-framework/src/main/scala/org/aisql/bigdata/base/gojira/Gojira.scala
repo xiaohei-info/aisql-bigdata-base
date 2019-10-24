@@ -1,11 +1,11 @@
 package org.aisql.bigdata.base.gojira
 
-import org.aisql.bigdata.base.gojira.monster.sparkimpl.{SparkHiveDaor, SparkHiveServicr, SparkKafkaDaor, SparkKafkaServicr}
-import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
 import org.aisql.bigdata.base.gojira.enum.EngineType.EngineType
 import org.aisql.bigdata.base.gojira.enum.{EngineType, MonsterType}
 import org.aisql.bigdata.base.gojira.model.{FieldMeta, TableSchema}
-import org.aisql.bigdata.base.gojira.monster.flinkimpl.{FlinkKafkaDaor, FlinkKafkaServicr}
+import org.aisql.bigdata.base.gojira.monster.hive.{SparkHiveDaor, SparkHiveServicr}
+import org.aisql.bigdata.base.gojira.monster.kafka.{FlinkKafkaDaor, FlinkKafkaServicr, SparkKafkaDaor, SparkKafkaServicr}
+import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
 import org.aisql.bigdata.base.java.ZipCompress
 import org.aisql.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
@@ -86,9 +86,32 @@ class Gojira(savePath: String,
 
   def save(): Unit = {
     if (!checkDir) return
+
+    //    monsters.foreach {
+    //      monster =>
+    //        logger.info(s"monster ${monster.monsterType} aoaoao~~~")
+    //
+    //        //初始化monsters
+    //        val initedMonsters = schema.map {
+    //          tbs =>
+    //            monster.database = tbs.tableName.split("\\.").head
+    //            monster.baseClass = tbs.baseClass
+    //            monster.fieldMeta = tbs.fieldsMeta
+    //            monster.init()
+    //            monster
+    //        }
+    //
+    //
+    //        //获取项目名到文件名之间的路径名称
+    //        val firstMonster = currMonsters.head
+    //        val dirName = firstMonster.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
+    //        val fileName = s"${firstMonster.monsterType}.scala"
+    //        val fullPath = s"$projectPath$dirName/$fileName"
+    //        logger.info(s"${firstMonster.monsterType} save name: $fullPath")
+    //    }
+
     schema.foreach {
       tbs =>
-        logger.info(s"start ${tbs.tableName} job, total fields: ${tbs.fieldsMeta.size}")
         monsters.foreach {
           monster =>
             logger.info(s"monster ${monster.monsterType} aoaoao~~~")

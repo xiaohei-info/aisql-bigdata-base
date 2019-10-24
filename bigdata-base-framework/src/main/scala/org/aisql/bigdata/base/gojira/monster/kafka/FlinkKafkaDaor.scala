@@ -1,4 +1,4 @@
-package org.aisql.bigdata.base.gojira.monster.flinkimpl
+package org.aisql.bigdata.base.gojira.monster.kafka
 
 import org.aisql.bigdata.base.gojira.enum.MonsterType
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
@@ -20,7 +20,7 @@ class FlinkKafkaDaor(basePackage: String, whoami: String) extends Ancestor(whoam
 
   override val implPkg: String = "kafka.impl"
 
-  override protected var pkgName: String = s"package $basePackage.dal.dao.flinkimpl"
+  override protected var pkgName: String = s"package $basePackage.dal.dao.kafka.flinkimpl"
 
   override protected var beanClassName: String = _
 

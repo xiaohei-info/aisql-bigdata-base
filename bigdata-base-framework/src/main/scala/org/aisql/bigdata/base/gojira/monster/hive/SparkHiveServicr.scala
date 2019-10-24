@@ -1,10 +1,9 @@
-package org.aisql.bigdata.base.gojira.monster.sparkimpl
+package org.aisql.bigdata.base.gojira.monster.hive
 
-import org.aisql.bigdata.base.gojira.monster.Ancestor
 import org.aisql.bigdata.base.gojira.enum.MonsterType
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
 import org.aisql.bigdata.base.gojira.model.ClassModel
-import org.aisql.bigdata.base.util.DateUtil
+import org.aisql.bigdata.base.gojira.monster.Ancestor
 
 /**
   * Author: xiaohei
@@ -20,7 +19,7 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor(who
 
   override val implPkg: String = "hive"
 
-  override protected var pkgName: String = s"package $basePackage.service.sparkimpl"
+  override protected var pkgName: String = s"package $basePackage.service.hive.sparkimpl"
 
   override protected var impPkgs: String = _
 
@@ -47,7 +46,7 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor(who
       s"""
          |import $frameworkPackage.$implPkg.{$rootClass, BaseHiveDao}
          |import $basePackage.dal.bean.$beanClassName
-         |import $basePackage.dal.dao.sparkimpl.$daoClassName
+         |import $basePackage.dal.dao.hive.sparkimpl.$daoClassName
 
          |import org.apache.spark.rdd.RDD
          |import org.apache.spark.sql.SparkSession

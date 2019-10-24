@@ -8,4 +8,4 @@ package org.aisql.bigdata.base.gojira.model
   */
 case class FieldMeta(ame: String, javaType: String, comment: String)
 
-case class TableSchema(tableName: String, baseClass: String, fieldsMeta: Seq[FieldMeta])
+case class TableSchema(tableName: String, baseClass: String, fieldsMeta: Seq[FieldMeta], isMaxwell: Boolean = false)

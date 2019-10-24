@@ -1,4 +1,4 @@
-package org.aisql.bigdata.base.gojira.monster.flinkimpl
+package org.aisql.bigdata.base.gojira.monster.kafka
 
 import org.aisql.bigdata.base.gojira.enum.MonsterType
 import org.aisql.bigdata.base.gojira.enum.MonsterType.MonsterType
@@ -19,7 +19,7 @@ class FlinkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
 
   override val implPkg: String = "kafka"
 
-  override protected var pkgName: String = s"package $basePackage.service.flinkimpl"
+  override protected var pkgName: String = s"package $basePackage.service.kafka.flinkimpl"
 
   override protected var beanClassName: String = _
 
@@ -47,7 +47,7 @@ class FlinkKafkaServicr(basePackage: String, whoami: String) extends Ancestor(wh
          |import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
          |import $frameworkPackage.$implPkg.{$rootClass, BaseKafkaDao}
          |import $basePackage.dal.bean.$beanClassName
-         |import $basePackage.dal.dao.flinkimpl.$daoClassName
+         |import $basePackage.dal.dao.kafka.flinkimpl.$daoClassName
       """.stripMargin
 
     val fields: String =
