@@ -49,7 +49,7 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
     **/
   override def fromText(sperator: String)(implicit env: SparkSession): RDD[B] = {
     val rdd = env.sparkContext.textFile(HDFS_PATH).map(_.split(sperator))
-    rdd.map(transText2Bean)
+    transText2Bean(rdd)
   }
 
   /**
@@ -135,7 +135,7 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
     * @param textArr 使用分隔符split之后的数据数组
     * @return 具体的bean对象
     **/
-  protected def transText2Bean(textArr: Array[String]): B
+  protected def transText2Bean(textArr: RDD[Array[String]]): RDD[B]
 
 
   /**
