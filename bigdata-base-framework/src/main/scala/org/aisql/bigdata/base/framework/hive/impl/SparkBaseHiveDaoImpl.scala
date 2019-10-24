@@ -132,10 +132,10 @@ trait SparkBaseHiveDaoImpl[B] extends BaseHiveDao[SparkSession, RDD[B]] {
   /**
     * 读取hdfs text文件时,将文本数据(数组)转化为具体的bean对象
     *
-    * @param textArr 使用分隔符split之后的数据数组
+    * @param arrRdd 使用分隔符split之后的数据数组
     * @return 具体的bean对象
     **/
-  protected def transText2Bean(textArr: RDD[Array[String]]): RDD[B]
+  protected def transText2Bean(arrRdd: RDD[Array[String]]): RDD[B]
 
 
   /**

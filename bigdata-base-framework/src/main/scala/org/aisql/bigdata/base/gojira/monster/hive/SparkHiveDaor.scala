@@ -98,15 +98,15 @@ class SparkHiveDaor(basePackage: String, whoami: String) extends Ancestor(whoami
 
     val transText2Bean: String =
       s"""
-        | /**
-        |    * 读取hdfs text文件时,将文本数据(数组)转化为具体的bean对象
-        |    *
-        |    * @param textArr 使用分隔符split之后的数据数组
-        |    * @return 具体的bean对象
-        |    **/
-        |  override protected def transText2Bean(text: Array[String]): $beanClassName = {
-        |    DataFrameReflactUtil.generatePojoValue(classOf[$beanClassName], text).asInstanceOf[$beanClassName]
-        |  }
+         | /**
+         |    * 读取hdfs text文件时,将文本数据(数组)转化为具体的bean对象
+         |    *
+         |    * @param arrRdd 使用分隔符split之后的数据数组
+         |    * @return 具体的bean对象
+         |    **/
+         |  override protected def transText2Bean(arrRdd: RDD[Array[String]]): RDD[$beanClassName] = {
+         |    arrRdd.map(r => DataFrameReflactUtil.generatePojoValue(classOf[$beanClassName], r).asInstanceOf[$beanClassName])
+         |  }
       """.stripMargin
 
     classModel = new ClassModel(pkgName, classHeader)
