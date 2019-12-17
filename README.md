@@ -103,7 +103,7 @@ gojira.setMonster(EngineType.SPARK)
 //设置表并初始化其表结构信息
 gojira.setTable(tables, spark)
 //保存到指定路径下，zip压缩包
-gojira.save()
+gojira.save("org.aisql.bigdata"
 ```
 
 在能够连接到 hive metastore 的环境中配置依赖包（比如spark-shell）并执行以上代码，将会得到一个 **${项目名}.zip** 的压缩包，解压开将其中的文件（包含了所有表对应的Bean、Dao与Service）贴到项目中即可开始使用。

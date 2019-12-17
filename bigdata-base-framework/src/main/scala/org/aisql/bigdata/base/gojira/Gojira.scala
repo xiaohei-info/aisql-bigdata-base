@@ -5,7 +5,7 @@ import org.aisql.bigdata.base.gojira.enum.{EngineType, MonsterType}
 import org.aisql.bigdata.base.gojira.model.{FieldMeta, TableSchema}
 import org.aisql.bigdata.base.gojira.monster.hive.{SparkHiveDaor, SparkHiveServicr}
 import org.aisql.bigdata.base.gojira.monster.kafka.{FlinkKafkaDaor, FlinkKafkaServicr, SparkKafkaDaor, SparkKafkaServicr}
-import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
+import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr, Pomr}
 import org.aisql.bigdata.base.java.ZipCompress
 import org.aisql.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
@@ -84,31 +84,46 @@ class Gojira(savePath: String,
     printSchema("")
   }
 
-  def save(): Unit = {
+  def save(groupId: String, artifactId: String = projectName, version: String = "1.0-SNAPSHOT"): Unit = {
     if (!checkDir) return
 
-    //    monsters.foreach {
-    //      monster =>
-    //        logger.info(s"monster ${monster.monsterType} aoaoao~~~")
-    //
-    //        //初始化monsters
-    //        val initedMonsters = schema.map {
-    //          tbs =>
-    //            monster.database = tbs.tableName.split("\\.").head
-    //            monster.baseClass = tbs.baseClass
-    //            monster.fieldMeta = tbs.fieldsMeta
-    //            monster.init()
-    //            monster
-    //        }
-    //
-    //
-    //        //获取项目名到文件名之间的路径名称
-    //        val firstMonster = currMonsters.head
-    //        val dirName = firstMonster.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
-    //        val fileName = s"${firstMonster.monsterType}.scala"
-    //        val fullPath = s"$projectPath$dirName/$fileName"
-    //        logger.info(s"${firstMonster.monsterType} save name: $fullPath")
-    //    }
+    def prepareModule(modulePath: String): Unit = {
+      val pom = new Pomr(groupId, artifactId, version)
+
+      if (modulePath.contains("-context") || modulePath.contains("-server") || modulePath.contains("-api")) {
+        mkModuleDir(modulePath)
+        pom.setParent()
+        if (modulePath.contains("-context")) {
+          pom.setArtifactId("context")
+          pom.setDependencies("context")
+        } else if (modulePath.contains("-server")) {
+          pom.setArtifactId("server")
+          pom.setDependencies("server")
+        } else {
+          pom.setArtifactId("api")
+        }
+      } else {
+        FileUtil.mkdir(projectPath)
+        pom.setCoord("root")
+        pom.setModule()
+        pom.setProperties()
+        pom.setDependencies("root")
+        pom.setDependencyManagement()
+        pom.setBuild()
+      }
+      FileUtil.saveFile(Seq[String](pom.toString), s"$modulePath/pom.xml")
+    }
+
+    //项目模块路径
+    val contextPath = s"$projectPath/$projectName-context"
+    val serverPath = s"$projectPath/$projectName-server"
+    val apiPath = s"$projectPath/$projectName-api"
+
+    prepareModule(projectPath)
+    prepareModule(contextPath)
+    prepareModule(serverPath)
+    prepareModule(apiPath)
+
 
     schema.foreach {
       tbs =>
@@ -121,22 +136,24 @@ class Gojira(savePath: String,
             monster.init()
 
             //获取项目名到文件名之间的路径名称
-            val dirName = monster.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
+            //            val dirName = monster.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
+            val dirName = monster.toString.split("\n").head.split(" ").last.replace(".", "/")
             val fileName = s"${tbs.baseClass}${monster.monsterType}.scala"
-            logger.info(s"${monster.monsterType} save name: $projectPath$dirName/$fileName")
-            FileUtil.saveFile(Seq[String](monster.toString), s"$projectPath$dirName/$fileName")
+            val finalPath = s"$projectPath/$projectName-server/src/main/scala/$dirName/$fileName"
+            logger.info(s"${monster.monsterType} save name: $finalPath")
+            FileUtil.saveFile(Seq[String](monster.toString), finalPath)
             logger.info("save done")
         }
     }
 
     logger.info("all table and monsters done, start zip compress")
-    if (FileUtil.isExists(s"$savePath/$projectName")) {
-      val zip = new ZipCompress(s"$savePath/$projectName.zip", s"$savePath/$projectName")
+    if (FileUtil.isExists(projectPath)) {
+      val zip = new ZipCompress(s"$projectPath.zip", projectPath)
       zip.zip()
       logger.info("zip done, delete files")
-      FileUtil.deleteFiles(s"$savePath/$projectName")
+      FileUtil.deleteFiles(projectPath)
     } else {
-      logger.error(s"$savePath/$projectName donen't exists, please set table or schema for gojira.")
+      logger.error(s"$projectPath donen't exists, please set table or schema for gojira.")
     }
     logger.info("job finished, gojira go home now")
   }
@@ -162,6 +179,13 @@ class Gojira(savePath: String,
       return false
     }
     true
+  }
+
+  private def mkModuleDir(modulePath: String): Unit = {
+    //创建代码路径
+    FileUtil.mkdir(s"$modulePath/src/main/scala/${projectPkgName.replace(".", "/")}")
+    FileUtil.mkdir(s"$modulePath/src/main/resources")
+    FileUtil.mkdir(s"$modulePath/src/test/scala")
   }
 
 }
