@@ -15,11 +15,11 @@ import org.apache.spark.sql.SparkSession
 
 object HiveUtil {
 
-  def getScheme(spark: SparkSession, tableName: String): Seq[(String, String, String)] = {
+  def getScheme(spark: SparkSession, tableName: String, toCamel: Boolean): Seq[(String, String, String)] = {
     val schema = spark.table(tableName).schema
     schema.map {
       t =>
-        val fieldName = t.name
+        val fieldName = if (toCamel) StringUtil.under2camel4field(t.name) else t.name
         val metaJson = JSON.parseObject(t.metadata.toString)
         val key = metaJson.getString("HIVE_TYPE_STRING")
         val purerKey = if (key.contains("(")) key.split("\\(").head else key

@@ -3,9 +3,10 @@ package org.aisql.bigdata.base.gojira
 import org.aisql.bigdata.base.gojira.enum.EngineType.EngineType
 import org.aisql.bigdata.base.gojira.enum.{EngineType, MonsterType}
 import org.aisql.bigdata.base.gojira.model.{FieldMeta, TableSchema}
+import org.aisql.bigdata.base.gojira.monster.cake.{Demor, Pomr}
 import org.aisql.bigdata.base.gojira.monster.hive.{SparkHiveDaor, SparkHiveServicr}
 import org.aisql.bigdata.base.gojira.monster.kafka.{FlinkKafkaDaor, FlinkKafkaServicr, SparkKafkaDaor, SparkKafkaServicr}
-import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr, Pomr}
+import org.aisql.bigdata.base.gojira.monster.{Ancestor, Beanr}
 import org.aisql.bigdata.base.java.ZipCompress
 import org.aisql.bigdata.base.util.{FileUtil, HiveUtil, StringUtil}
 import org.apache.spark.sql.SparkSession
@@ -49,12 +50,12 @@ class Gojira(savePath: String,
 
   private var schema: Seq[TableSchema] = Seq.empty[TableSchema]
 
-  def setTable(tableNames: Seq[String], spark: SparkSession) = {
+  def setTable(tableNames: Seq[String], spark: SparkSession, toCamel: Boolean = false) = {
     println("set table connect to hive and init schemas")
     schema = tableNames.map {
       tableName =>
         val baseClass: String = StringUtil.under2camel(tableName.split("\\.").last)
-        val fieldMeta: Seq[FieldMeta] = HiveUtil.getScheme(spark, tableName).map(x => FieldMeta(x._1, x._2, x._3))
+        val fieldMeta: Seq[FieldMeta] = HiveUtil.getScheme(spark, tableName, toCamel).map(x => FieldMeta(x._1, x._2, x._3))
         println(s"HiveUtil.getScheme --> $baseClass get ${fieldMeta.size} fields")
         TableSchema(tableName, baseClass, fieldMeta)
     }
@@ -96,6 +97,7 @@ class Gojira(savePath: String,
         if (modulePath.contains("-context")) {
           pom.setArtifactId("context")
           pom.setDependencies("context")
+          pom.setBuild("context")
         } else if (modulePath.contains("-server")) {
           pom.setArtifactId("server")
           pom.setDependencies("server")
@@ -109,7 +111,7 @@ class Gojira(savePath: String,
         pom.setProperties()
         pom.setDependencies("root")
         pom.setDependencyManagement()
-        pom.setBuild()
+        pom.setBuild("root")
       }
       FileUtil.saveFile(Seq[String](pom.toString), s"$modulePath/pom.xml")
     }
@@ -124,6 +126,12 @@ class Gojira(savePath: String,
     prepareModule(serverPath)
     prepareModule(apiPath)
 
+    //context demo
+    val demor = new Demor(projectName, projectPkgName, whoami)
+    val pkgPath = projectPkgName.replace(".", "/")
+    FileUtil.mkdir(s"$contextPath/src/main/scala/$pkgPath/context")
+    FileUtil.saveFile(Seq[String](demor.getFlinkDemo), s"$contextPath/src/main/scala/$pkgPath/demo/FlinkKafkaDemo.scala")
+    FileUtil.saveFile(Seq[String](demor.getSparkDemo), s"$contextPath/src/main/scala/$pkgPath/demo/SparkKafkaDemo.scala")
 
     schema.foreach {
       tbs =>
@@ -139,7 +147,7 @@ class Gojira(savePath: String,
             //            val dirName = monster.toString.split("\n").head.split(projectPkgName).last.replace(".", "/")
             val dirName = monster.toString.split("\n").head.split(" ").last.replace(".", "/")
             val fileName = s"${tbs.baseClass}${monster.monsterType}.scala"
-            val finalPath = s"$projectPath/$projectName-server/src/main/scala/$dirName/$fileName"
+            val finalPath = s"$serverPath/src/main/scala/$dirName/$fileName"
             logger.info(s"${monster.monsterType} save name: $finalPath")
             FileUtil.saveFile(Seq[String](monster.toString), finalPath)
             logger.info("save done")

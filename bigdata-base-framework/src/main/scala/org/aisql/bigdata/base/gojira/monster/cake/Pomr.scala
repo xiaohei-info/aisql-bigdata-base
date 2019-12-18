@@ -1,4 +1,4 @@
-package org.aisql.bigdata.base.gojira.monster
+package org.aisql.bigdata.base.gojira.monster.cake
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -69,25 +69,87 @@ class Pomr(groupId: String, artifactId: String, version: String) {
 
   def setDependencies(m: String): Unit = {
     dependencies = m match {
-      case "context" =>
-        s"""
-           |    <dependencies>
-           |        <dependency>
-           |            <groupId>$groupId</groupId>
-           |            <artifactId>$artifactId-server</artifactId>
-           |            <version>$version</version>
-           |        </dependency>
-           |    </dependencies>
-    """.stripMargin
-      case "server" =>
-        s"""
-           |    <dependencies>
-           |        <dependency>
-           |            <groupId>$groupId</groupId>
-           |            <artifactId>$artifactId-api</artifactId>
-           |            <version>$version</version>
-           |        </dependency>
-        """.stripMargin +
+      case "root" =>
+        """
+          |    <dependencies>
+          |        <dependency>
+          |            <groupId>org.aisql.bigdata</groupId>
+          |            <artifactId>bigdata-base-framework</artifactId>
+          |            <version>1.0-SNAPSHOT</version>
+          |        </dependency>
+          |        <dependency>
+          |            <groupId>org.aisql.bigdata</groupId>
+          |            <artifactId>bigdata-base-component</artifactId>
+          |            <version>1.0-SNAPSHOT</version>
+          |        </dependency>
+          |        <dependency>
+          |            <groupId>org.scala-lang</groupId>
+          |            <artifactId>scala-library</artifactId>
+          |            <version>${scala.version}</version>
+          |            <scope>provided</scope>
+          |        </dependency>
+          |        <dependency>
+          |            <groupId>org.scalaj</groupId>
+          |            <artifactId>scalaj-http_2.10</artifactId>
+          |            <version>2.3.0</version>
+          |            <scope>provided</scope>
+          |        </dependency>
+          |        <dependency>
+          |            <groupId>com.alibaba</groupId>
+          |            <artifactId>fastjson</artifactId>
+          |            <version>1.2.25</version>
+          |        </dependency>
+          |        <!-- logback -->
+          |        <dependency>
+          |            <groupId>org.slf4j</groupId>
+          |            <artifactId>slf4j-api</artifactId>
+          |            <version>${slf4j.version}</version>
+          |            <scope>provided</scope>
+          |        </dependency>
+          |        <dependency>
+          |            <groupId>ch.qos.logback</groupId>
+          |            <artifactId>logback-classic</artifactId>
+          |            <version>${logback.version}</version>
+          |            <scope>provided</scope>
+          |        </dependency>
+          |        <dependency>
+          |            <groupId>com.typesafe.scala-logging</groupId>
+          |            <artifactId>scala-logging_${scala.binary.version}</artifactId>
+          |            <version>3.5.0</version>
+          |            <scope>provided</scope>
+          |        </dependency>
+          |        <dependency>
+          |            <groupId>ch.qos.logback</groupId>
+          |            <artifactId>logback-access</artifactId>
+          |            <version>${logback.version}</version>
+          |            <scope>provided</scope>
+          |        </dependency>
+          |    </dependencies>
+        """.stripMargin
+      //context、server
+      case _ =>
+        val first = m match {
+          case "server" =>
+            s"""
+               |    <dependencies>
+               |        <dependency>
+               |            <groupId>$groupId</groupId>
+               |            <artifactId>$artifactId-api</artifactId>
+               |            <version>$version</version>
+               |        </dependency>
+        """.stripMargin
+          case _ =>
+            s"""
+               |    <dependencies>
+               |        <dependency>
+               |            <groupId>$groupId</groupId>
+               |            <artifactId>$artifactId-server</artifactId>
+               |            <version>$version</version>
+               |        </dependency>
+        """.stripMargin
+        }
+
+        first +
           """
             |        <!--flink-->
             |        <dependency>
@@ -97,6 +159,10 @@ class Pomr(groupId: String, artifactId: String, version: String) {
             |        <dependency>
             |            <groupId>org.apache.flink</groupId>
             |            <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
+            |        </dependency>
+            |        <dependency>
+            |            <groupId>org.apache.flink</groupId>
+            |            <artifactId>flink-scala_${scala.binary.version}</artifactId>
             |        </dependency>
             |        <!--spark-->
             |        <dependency>
@@ -130,93 +196,80 @@ class Pomr(groupId: String, artifactId: String, version: String) {
             |        </dependency>
             |    </dependencies>
           """.stripMargin
-      case "root" =>
-        """
-          |    <dependencies>
-          |        <dependency>
-          |            <groupId>org.aisql.bigdata</groupId>
-          |            <artifactId>bigdata-base-framework</artifactId>
-          |            <version>1.0-SNAPSHOT</version>
-          |        </dependency>
-          |        <dependency>
-          |            <groupId>org.aisql.bigdata</groupId>
-          |            <artifactId>bigdata-base-component</artifactId>
-          |            <version>1.0-SNAPSHOT</version>
-          |        </dependency>
-          |        <dependency>
-          |            <groupId>org.scala-lang</groupId>
-          |            <artifactId>scala-library</artifactId>
-          |            <version>${scala.version}</version>
-          |            <scope>provided</scope>
-          |        </dependency>
-          |        <dependency>
-          |            <groupId>org.scalaj</groupId>
-          |            <artifactId>scalaj-http_2.10</artifactId>
-          |            <version>2.3.0</version>
-          |        </dependency>
-          |        <dependency>
-          |            <groupId>com.alibaba</groupId>
-          |            <artifactId>fastjson</artifactId>
-          |            <version>1.2.25</version>
-          |        </dependency>
-          |        <!-- logback -->
-          |        <dependency>
-          |            <groupId>org.slf4j</groupId>
-          |            <artifactId>slf4j-api</artifactId>
-          |            <version>${slf4j.version}</version>
-          |        </dependency>
-          |        <dependency>
-          |            <groupId>ch.qos.logback</groupId>
-          |            <artifactId>logback-classic</artifactId>
-          |            <version>${logback.version}</version>
-          |        </dependency>
-          |        <dependency>
-          |            <groupId>ch.qos.logback</groupId>
-          |            <artifactId>logback-access</artifactId>
-          |            <version>${logback.version}</version>
-          |        </dependency>
-          |    </dependencies>
-        """.stripMargin
-      case _ => ""
     }
   }
 
-  def setBuild(): Unit = {
-    build =
-      """
-        |    <build>
-        |        <sourceDirectory>src/main/scala</sourceDirectory>
-        |        <testSourceDirectory>src/test/scala</testSourceDirectory>
-        |        <plugins>
-        |            <plugin>
-        |                <groupId>org.apache.maven.plugins</groupId>
-        |                <artifactId>maven-compiler-plugin</artifactId>
-        |                <configuration>
-        |                    <source>${java.version}</source>
-        |                    <target>${java.version}</target>
-        |                    <showWarnings>true</showWarnings>
-        |                    <compilerArguments>
-        |                        <verbose/>
-        |                        <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
-        |                    </compilerArguments>
-        |                </configuration>
-        |            </plugin>
-        |            <plugin>
-        |                <groupId>org.scala-tools</groupId>
-        |                <artifactId>maven-scala-plugin</artifactId>
-        |                <version>2.15.0</version>
-        |                <executions>
-        |                    <execution>
-        |                        <id>scala-compile-first</id>
-        |                        <goals>
-        |                            <goal>compile</goal>
-        |                        </goals>
-        |                    </execution>
-        |                </executions>
-        |            </plugin>
-        |        </plugins>
-        |    </build>
-      """.stripMargin
+  def setBuild(m: String): Unit = {
+    build = m match {
+      case "root" =>
+        """
+          |    <build>
+          |        <sourceDirectory>src/main/scala</sourceDirectory>
+          |        <testSourceDirectory>src/test/scala</testSourceDirectory>
+          |        <plugins>
+          |            <plugin>
+          |                <groupId>org.apache.maven.plugins</groupId>
+          |                <artifactId>maven-compiler-plugin</artifactId>
+          |                <configuration>
+          |                    <source>${java.version}</source>
+          |                    <target>${java.version}</target>
+          |                    <showWarnings>true</showWarnings>
+          |                    <compilerArguments>
+          |                        <verbose/>
+          |                        <bootclasspath>${java.home}/lib/rt.jar:${java.home}/lib/jce.jar</bootclasspath>
+          |                    </compilerArguments>
+          |                </configuration>
+          |            </plugin>
+          |            <plugin>
+          |                <groupId>org.scala-tools</groupId>
+          |                <artifactId>maven-scala-plugin</artifactId>
+          |                <version>2.15.0</version>
+          |                <executions>
+          |                    <execution>
+          |                        <id>scala-compile-first</id>
+          |                        <goals>
+          |                            <goal>compile</goal>
+          |                        </goals>
+          |                    </execution>
+          |                </executions>
+          |            </plugin>
+          |        </plugins>
+          |    </build>
+        """.stripMargin
+      case "context" =>
+        """
+          |    <build>
+          |        <plugins>
+          |            <plugin>
+          |                <groupId>org.apache.maven.plugins</groupId>
+          |                <artifactId>maven-shade-plugin</artifactId>
+          |                <version>3.2.1</version>
+          |                <executions>
+          |                    <execution>
+          |                        <phase>package</phase>
+          |                        <goals>
+          |                            <goal>shade</goal>
+          |                        </goals>
+          |                        <configuration>
+          |                            <filters>
+          |                                <filter>
+          |                                    <artifact>*:*</artifact>
+          |                                    <excludes>
+          |                                        <exclude>META-INF/*.SF</exclude>
+          |                                        <exclude>META-INF/*.DSA</exclude>
+          |                                        <exclude>META-INF/*.RSA</exclude>
+          |                                    </excludes>
+          |                                </filter>
+          |                            </filters>
+          |                        </configuration>
+          |                    </execution>
+          |                </executions>
+          |            </plugin>
+          |        </plugins>
+          |    </build>
+        """.stripMargin
+      case _ => ""
+    }
   }
 
   def setProperties() = {
@@ -253,6 +306,12 @@ class Pomr(groupId: String, artifactId: String, version: String) {
         |            <dependency>
         |                <groupId>org.apache.flink</groupId>
         |                <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
+        |                <version>${flink.version}</version>
+        |                <scope>provided</scope>
+        |            </dependency>
+        |            <dependency>
+        |                <groupId>org.apache.flink</groupId>
+        |                <artifactId>flink-scala_${scala.binary.version}</artifactId>
         |                <version>${flink.version}</version>
         |                <scope>provided</scope>
         |            </dependency>
@@ -312,11 +371,13 @@ class Pomr(groupId: String, artifactId: String, version: String) {
         |                <groupId>org.redisson</groupId>
         |                <artifactId>redisson</artifactId>
         |                <version>3.5.4</version>
+        |                <scope>provided</scope>
         |            </dependency>
         |            <dependency>
         |                <groupId>redis.clients</groupId>
         |                <artifactId>jedis</artifactId>
         |                <version>2.9.0</version>
+        |                <scope>provided</scope>
         |            </dependency>
         |        </dependencies>
         |    </dependencyManagement>

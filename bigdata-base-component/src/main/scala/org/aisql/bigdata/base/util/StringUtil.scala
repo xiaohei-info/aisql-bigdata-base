@@ -113,7 +113,18 @@ object StringUtil {
     arr.map { s => s.substring(0, 1).toUpperCase + s.substring(1) }.mkString("")
   }
 
+  def under2camel4field(origin: String) = {
+    val camel = under2camel(origin)
+    camel.substring(0, 1).toLowerCase + camel.substring(1)
+  }
+
+  def main(args: Array[String]) {
+    println(under2camel4field("sub_member_id"))
+  }
+
   def camel2under(origin: String) = {
-    origin.replaceAll("([0-9a-zA-Z])([A-Z])", "$1" + underSeparator + "$2").toLowerCase()
+    //预处理 两个连续大写前跟一个小写字母格式的字符串(如aHJ),提前将两个联系的大写分割,将会导致所有连续的大写都提前分割
+    val tmp = origin.replaceAll("([A-Z])([A-Z])", "$1" + underSeparator + "$2")
+    tmp.replaceAll("([0-9a-zA-Z])([A-Z])", "$1" + underSeparator + "$2").toLowerCase()
   }
 }
