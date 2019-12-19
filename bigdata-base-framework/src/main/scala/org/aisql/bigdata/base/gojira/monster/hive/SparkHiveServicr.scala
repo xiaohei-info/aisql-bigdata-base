@@ -38,12 +38,13 @@ class SparkHiveServicr(basePackage: String, whoami: String) extends Ancestor(who
     beanClassName = s"$baseClass${MonsterType.BEAN}"
     classHeader =
       s"""
-         |class $baseClass$monsterType extends $rootClass[SparkSession, RDD[${baseClass}Bean]]""".stripMargin
+         |class $baseClass$monsterType extends $rootClass[SparkSession, RDD[${baseClass}Bean]] with Traceable[${baseClass}Bean]""".stripMargin
 
     val daoClassName = s"$baseClass${MonsterType.SPARK_HIVE_DAO}"
 
     impPkgs =
       s"""
+         |import $frameworkPackage.Traceable
          |import $frameworkPackage.$implPkg.{$rootClass, BaseHiveDao}
          |import $basePackage.dal.bean.$beanClassName
          |import $basePackage.dal.dao.hive.sparkimpl.$daoClassName
