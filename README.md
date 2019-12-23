@@ -149,9 +149,6 @@ service.createTable(demoRDD)
 业务方使用方式如下:
 
 ```scala
-val service = new OdsCreditTradinglogHISparkHiveService
-
-
 import org.aisql.bigdata.base.framework.bean.RegressBean
 //样本表名、样本表id字段名、样本表name字段名、样本表回溯时间字段名、最大数据量、全量表id字段名、全量表name字段名
 val regress = RegressBean("default.sample_test", "id", "name", "date", 100000, "id_card_no", "card_name")
