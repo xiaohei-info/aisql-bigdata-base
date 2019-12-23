@@ -108,6 +108,14 @@ gojira.save("org.aisql.bigdata"
 
 在能够连接到 hive metastore 的环境中配置依赖包（比如spark-shell）并执行以上代码，将会得到一个 **${项目名}.zip** 的压缩包，解压开将其中的文件（包含了所有表对应的Bean、Dao与Service）贴到项目中即可开始使用。
 
+需要注意的是 **hive表中的字段名必须为下划线格式**, 驼峰类型的格式由于hive中不识别大小写到最最后读取的字段名都为小写。
+
+默认情况下，hive表的字段名会原封不动地映射为实体类的字段名，如果需要将hive表下划线形式转换为实体类的驼峰形式，可以通过以下参数设置:
+
+```scala
+gojira.setTable(tables, spark, toCamel = true)
+```
+
 ### 1.4 数据接口使用
 
 现有 default.t_users 表需要读取，代码如下：
@@ -132,7 +140,44 @@ service.createTable(demoRDD)
 
 相关数据操作的API见 ```org.aisql.bigdata.base.framework.hive.BaseHiveService```
 
-### 1.5 自定义代码
+### 1.5 回溯接口使用
+
+为分离数据处理逻辑与业务处理逻辑，统一回溯处理方式，framework 中为业务方提供了现成的回溯接口 ```Traceable```。
+
+默认情况下，Gojira 生成的 Service 实现类将会集成这个特质接口，使其拥有回溯能力(目前支持Spark类)。
+
+业务方使用方式如下:
+
+```scala
+val service = new OdsCreditTradinglogHISparkHiveService
+
+
+import org.aisql.bigdata.base.framework.bean.RegressBean
+//样本表名、样本表id字段名、样本表name字段名、样本表回溯时间字段名、最大数据量、全量表id字段名、全量表name字段名
+val regress = RegressBean("default.sample_test", "id", "name", "date", 100000, "id_card_no", "card_name")
+
+//执行回溯
+service.doBusiness(
+  service.selectAll(),
+  x => x.id_card_no + "_" + x.card_name,
+  x => x.create_time,
+  separator = "_",
+  regressOrNot = Some(regress)
+)
+
+//执行全量
+service.doBusiness(
+  service.selectAll(),
+  x => x.id_card_no + "_" + x.card_name,
+  x => x.create_time,
+  separator = "_",
+  regressOrNot = None
+)
+```
+
+其中，如果 ```regressOrNot = None``` 则会执行全量逻辑，效果等同 ```service.selectAll().groupByKey()```
+
+### 1.6 自定义代码
 
 为了使用户了解如何通过 framework 提供的基础接口定义 Bean、Dao与Service 来实现对应的数据操作方法，下面将会对基础接口的开发过程进行介绍。
 
@@ -230,7 +275,7 @@ class UsersService extends BaseHiveService[SparkSession, RDD[Uesrs]] {
 
 4、业务使用同**「1.4 数据接口使用」**小节
 
-### 1.6 数据源开发
+### 1.7 数据源开发
 
 由于各个数据源的读取方式与提供给业务层使用的读取接口各不相同，如 BaseHiveDao 专门处理Hive数据读写，会提供 fromHive、createTable等操作，所以不同的数据源需要独立开发。
 
