@@ -272,7 +272,75 @@ class UsersService extends BaseHiveService[SparkSession, RDD[Uesrs]] {
 
 4、业务使用同**「1.4 数据接口使用」**小节
 
-### 1.7 数据源开发
+### 1.7 预定义数据源
+
+framework 中内置了两种业务中经常使用的数据源的预定义实现：**Maxwell、StreamMsg**
+
+开发人员只需要在业务项目的 Dao 实现中继承预定义实现并修改对应的 Service 实现泛型为 ```MaxwellBean``` 或者 ```StreamMsg``` 即可。
+
+Flink 的预定义实现：
+
+* FlinkMaxwellKafkaDaoImpl
+* FlinkStreamMsgKafkaDaoImpl
+
+Spark 的预定义实现：
+
+* SparkMaxwellKafkaDaoImpl
+* SparkStreamMsgKafkaDaoImpl
+
+使用样例：
+
+```scala
+//正常业务实体类泛型的Dao实现
+class UserFlinkKafkaDao extends FlinkBaseKafkaDaoImpl[UserBean] {
+
+  override val TABLE: String = "xxx"
+  override val DATABASE: String = "xxx"
+
+  override val GROUP_ID: String = s"$DATABASE-$TABLE"
+  override val TOPIC: String = s"$DATABASE-$TABLE"
+  override val BOOTSTRAP_SERVERS: String = "xxx"
+
+  override protected def transJson2Bean(jsonStream: DataStream[String]): DataStream[UserBean] = {
+    jsonStream.map(x => JSON.parseObject(x, classOf[UserBean]))
+  }
+
+  override protected def transBean2Json(beanStream: DataStream[UserBean]): DataStream[String] = {
+    beanStream.map(x => JavaJsonUtil.toJSONString(x))
+  }
+}
+
+//正常业务实体类泛型的Service实现
+class UserFlinkKafkaService extends BaseKafkaService[StreamExecutionEnvironment, DataStream[UserBean]] {
+
+  protected override val dao: BaseKafkaDao[StreamExecutionEnvironment, DataStream[UserBean]] = new UserFlinkKafkaDao
+
+}
+```
+
+```scala
+//使用预定义Maxwell的Dao实现
+//修改继承父类为FiGwExpressOrderCardEncrypt即可
+class UserFlinkKafkaDao extends FlinkMaxwellKafkaDaoImpl {
+
+  override val TABLE: String = "xxx"
+  override val DATABASE: String = "xxx"
+
+  override val GROUP_ID: String = s"$DATABASE-$TABLE"
+  override val TOPIC: String = s"$DATABASE-$TABLE"
+  override val BOOTSTRAP_SERVERS: String = "xxx"
+
+}
+
+//使用预定义Maxwell的Service实现
+class UserFlinkKafkaService extends BaseKafkaService[StreamExecutionEnvironment, DataStream[MaxwellBean]] {
+
+  protected override val dao: BaseKafkaDao[StreamExecutionEnvironment, DataStream[MaxwellBean]] = new UserFlinkKafkaDao
+
+}
+```
+
+### 1.8 数据源开发
 
 由于各个数据源的读取方式与提供给业务层使用的读取接口各不相同，如 BaseHiveDao 专门处理Hive数据读写，会提供 fromHive、createTable等操作，所以不同的数据源需要独立开发。
 
