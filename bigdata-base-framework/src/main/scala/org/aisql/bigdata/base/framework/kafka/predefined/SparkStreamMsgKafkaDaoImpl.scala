@@ -1,7 +1,8 @@
-package org.aisql.bigdata.base.framework.kafka.impl
+package org.aisql.bigdata.base.framework.kafka.predefined
 
 import com.alibaba.fastjson.JSON
 import org.aisql.bigdata.base.framework.bean.StreamMsgBean
+import org.aisql.bigdata.base.framework.kafka.impl.SparkBaseKafkaDaoImpl
 import org.aisql.bigdata.base.util.JavaJsonUtil
 import org.apache.spark.streaming.dstream.DStream
 
