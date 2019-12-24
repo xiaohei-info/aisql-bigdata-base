@@ -14,7 +14,7 @@ class Demor(projectName: String, basePackage: String, whoami: String) {
     s"""package $basePackage.demo
        |
          |import com.typesafe.scalalogging.Logger
-       |import org.aisql.bigdata.tradinglog.processor.service.kafka.flinkimpl._
+       |import $basePackage.service.kafka.flinkimpl._
        |import org.apache.flink.api.java.utils.ParameterTool
        |import org.apache.flink.runtime.state.filesystem.FsStateBackend
        |import org.apache.flink.streaming.api.scala._
@@ -54,7 +54,7 @@ class Demor(projectName: String, basePackage: String, whoami: String) {
     s"""package $basePackage.demo
        |
        |import com.typesafe.scalalogging.Logger
-       |import org.aisql.bigdata.tradinglog.processor.service.kafka.sparkimpl._
+       |import $basePackage.service.kafka.sparkimpl._
        |import org.apache.spark.SparkConf
        |import org.apache.spark.sql.SparkSession
        |import org.apache.spark.streaming.{Seconds, StreamingContext}
