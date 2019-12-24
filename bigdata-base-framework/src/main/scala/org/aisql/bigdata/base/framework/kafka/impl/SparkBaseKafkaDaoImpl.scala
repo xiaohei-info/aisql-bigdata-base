@@ -2,8 +2,11 @@ package org.aisql.bigdata.base.framework.kafka.impl
 
 import java.util.Properties
 
+import com.alibaba.fastjson.JSON
 import org.aisql.bigdata.base.connector.realtime.sinks.KafkaSink
+import org.aisql.bigdata.base.framework.bean.{MaxwellBean, StreamMsgBean}
 import org.aisql.bigdata.base.framework.kafka.BaseKafkaDao
+import org.aisql.bigdata.base.util.JavaJsonUtil
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.streaming.StreamingContext
@@ -23,6 +26,22 @@ trait SparkBaseKafkaDaoImpl[B] extends BaseKafkaDao[StreamingContext, DStream[B]
   protected def transJson2Bean(jsonStream: DStream[String]): DStream[B]
 
   protected def transBean2Json(beanStream: DStream[B]): DStream[String]
+
+  protected def transJson2BeanMaxwell(jsonStream: DStream[String]): DStream[MaxwellBean] = {
+    jsonStream.map(x => JSON.parseObject(x, classOf[MaxwellBean]))
+  }
+
+  protected def tranBean2JsonMaxwell(beanStream: DStream[MaxwellBean]): DStream[String] = {
+    beanStream.map(x => JavaJsonUtil.toJSONString(x))
+  }
+
+  protected def transJson2BeanStreamMsg(jsonStream: DStream[String]): DStream[StreamMsgBean] = {
+    jsonStream.map(x => JSON.parseObject(x, classOf[StreamMsgBean]))
+  }
+
+  protected def tranBean2JsonStreamMsg(beanStream: DStream[StreamMsgBean]): DStream[String] = {
+    beanStream.map(x => JavaJsonUtil.toJSONString(x))
+  }
 
   override def readStream(implicit env: StreamingContext): DStream[B] = {
     val kafkaParams: Map[String, Object] = Map[String, Object](
