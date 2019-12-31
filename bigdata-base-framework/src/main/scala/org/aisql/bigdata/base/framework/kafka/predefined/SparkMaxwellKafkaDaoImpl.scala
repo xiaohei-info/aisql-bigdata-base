@@ -15,7 +15,16 @@ import org.apache.spark.streaming.dstream.DStream
 abstract class SparkMaxwellKafkaDaoImpl extends SparkBaseKafkaDaoImpl[MaxwellBean] {
 
   override protected def transJson2Bean(jsonStream: DStream[String]): DStream[MaxwellBean] = {
-    jsonStream.map(x => JSON.parseObject(x, classOf[MaxwellBean]))
+    jsonStream.flatMap {
+      x =>
+        try {
+          Some(JSON.parseObject(x, classOf[MaxwellBean]))
+        } catch {
+          case e: Exception =>
+            logger.error(e.getMessage + ", json string:" + x)
+            None
+        }
+    }
   }
 
   override protected def transBean2Json(beanStream: DStream[MaxwellBean]): DStream[String] = {

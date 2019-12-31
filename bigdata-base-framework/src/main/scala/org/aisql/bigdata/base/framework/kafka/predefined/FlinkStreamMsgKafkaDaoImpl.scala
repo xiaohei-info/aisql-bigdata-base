@@ -15,7 +15,16 @@ import org.apache.flink.streaming.api.scala._
 abstract class FlinkStreamMsgKafkaDaoImpl  extends FlinkBaseKafkaDaoImpl[StreamMsgBean] {
 
   override protected def transJson2Bean(jsonStream: DataStream[String]): DataStream[StreamMsgBean] = {
-    jsonStream.map(x => JSON.parseObject(x, classOf[StreamMsgBean]))
+    jsonStream.flatMap {
+      x =>
+        try {
+          Some(JSON.parseObject(x, classOf[StreamMsgBean]))
+        } catch {
+          case e: Exception =>
+            logger.error(e.getMessage + ", json string:" + x)
+            None
+        }
+    }
   }
 
   override protected def transBean2Json(beanStream: DataStream[StreamMsgBean]): DataStream[String] = {

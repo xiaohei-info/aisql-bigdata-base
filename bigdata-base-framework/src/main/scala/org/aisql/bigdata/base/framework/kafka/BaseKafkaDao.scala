@@ -1,5 +1,6 @@
 package org.aisql.bigdata.base.framework.kafka
 
+import com.typesafe.scalalogging.Logger
 import org.aisql.bigdata.base.framework.Daoable
 
 /**
@@ -9,6 +10,8 @@ import org.aisql.bigdata.base.framework.Daoable
   * Host: xiaohei.info
   */
 trait BaseKafkaDao[E, R] extends Daoable with Serializable {
+
+  protected val logger = Logger(this.getClass)
 
   /**
     * 数据库名

@@ -15,7 +15,16 @@ import org.apache.flink.streaming.api.scala._
 abstract class FlinkMaxwellKafkaDaoImpl extends FlinkBaseKafkaDaoImpl[MaxwellBean] {
 
   override protected def transJson2Bean(jsonStream: DataStream[String]): DataStream[MaxwellBean] = {
-    jsonStream.map(x => JSON.parseObject(x, classOf[MaxwellBean]))
+    jsonStream.flatMap {
+      x =>
+        try {
+          Some(JSON.parseObject(x, classOf[MaxwellBean]))
+        } catch {
+          case e: Exception =>
+            logger.error(e.getMessage + ", json string:" + x)
+            None
+        }
+    }
   }
 
   override protected def transBean2Json(beanStream: DataStream[MaxwellBean]): DataStream[String] = {
