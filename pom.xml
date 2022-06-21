@@ -21,7 +21,7 @@
         <hadoop.version>3.0.0</hadoop.version>
         <hbase.version>2.0.0</hbase.version>
         <hive.version>2.1.1</hive.version>
-        <mysql.version>5.1.35</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <slf4j.version>1.7.21</slf4j.version>
         <logback.version>1.1.7</logback.version>
         <flink.version>1.7.2</flink.version>
